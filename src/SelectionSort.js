@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { selectionSortFactory } from './selection-sort/index.js'
 import { gridDisplay } from './grid-display/index.js'
 // CSS
-import './App.css';
+import './SelectionSort.css';
 import './grid-display/main.css';
 import './grid-display/font-awesome/css/font-awesome.min.css';
 
