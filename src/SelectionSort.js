@@ -9,7 +9,17 @@ import './SelectionSort.css'
 import './grid-display/main.css'
 import './grid-display/font-awesome/css/font-awesome.min.css'
 
-class SelectionSort extends Component {
+// NOTE: the actual type of ALGORITHMS and COUNT don't have any effect
+/*::
+type Props = {
+  finishCounter: {
+    ALGORITHMS: Array<Object>,
+    COUNT: number
+  }
+}
+*/
+class SelectionSort extends Component<Props> { // Can't work out comment syntax for <Props>
+  props /*: Props */
   render = () => {
     return (
       <div id="selection-sort" className="viz"></div>
