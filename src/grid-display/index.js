@@ -1,6 +1,7 @@
 // @flow
-import { Observable } from 'rxjs/Rx.js'
-const Rx = { Observable }
+
+// $FlowFixMe
+import Rx from 'rxjs/Rx.js'
 
 /* eslint-env browser */
 
@@ -387,7 +388,7 @@ export function gridDisplay (
     if (!SHOW_WORKING) {
       return 0
     }
-    return 1000 / FPS / ACCELLERATION
+    return 1000 / 2 / ACCELLERATION
   }
 
   function clearShowWorkingCellsDisplay (
