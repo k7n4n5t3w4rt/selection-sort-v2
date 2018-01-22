@@ -30,16 +30,17 @@ class SelectionSort extends Component<Props> { // Can't work out comment syntax 
   componentDidMount = () => {
     // Config
     const selectionConf = {
+      CONTAINER_ID: this.props.containerId,
+      SHOW_WORKING: true,
       FPS: 10,
+      ACCELLERATION: 1,
       MAX_SECONDS_TRANSITION_INTERVAL: 2,
       COLS: 4,
       ROWS: 4,
-      SHOW_WORKING: false,
       LOOP: true,
       RELOAD_INTERVAL: 2000,
       CONSTANT_TRANSITION_SPEED: false,
       FINISH_COUNTER: this.props.finishCounter,
-      CONTAINER_ID: this.props.containerId
     }
     // --------------------------------- //
     // SELECTION SORT

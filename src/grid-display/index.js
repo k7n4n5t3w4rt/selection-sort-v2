@@ -5,15 +5,37 @@ import Rx from 'rxjs/Rx.js'
 
 /* eslint-env browser */
 
+/*::
+type gridDisplayObject = {
+  displayGrid: Function,
+  setCurrentCellDisplayToActive: Function,
+  clearActiveCellsDisplay: Function,
+  swapActiveCellsDisplay: Function,
+  setNewCellColour: Function,
+  getMatrix: Function,
+  getMatrixXYValues: Function,
+  setCellDisplay: Function,
+  random: Function,
+  swapCells: Function,
+  moveCell: Function,
+  getTransitionSpeed: Function,
+  moveCellBackQuickly: Function,
+  getClick: Function,
+  clearShowWorkingCellsDisplay: Function,
+  toggleShowWorking: Function,
+  enableShowWorkingToggleControl: Function
+}
+*/
+
 export function gridDisplay (
-) /* : Object */ {
+) /*: gridDisplayObject */ {
   function displayGrid (
-    a /* :Array<Object> */,
-    cols /* :number */,
-    rows /* :number */,
-    containerId /* :string */,
-    showWorking /* :boolean */
-  ) /* :void */ {
+    a /*: Array<Object> */,
+    cols /*: number */,
+    rows /*: number */,
+    containerId /*: string */,
+    showWorking /*: boolean */
+  ) /*: void */ {
     const selectionSort = getGridContainer(containerId)
     while (selectionSort.firstChild) {
       selectionSort.removeChild(selectionSort.firstChild)
@@ -46,9 +68,9 @@ export function gridDisplay (
   }
 
   function makeControlsDisplay (
-    selectionSort /* :HTMLElement */,
-    showWorking /* :boolean */
-  ) /* :void */ {
+    selectionSort /*: HTMLElement */,
+    showWorking /*: boolean */
+  ) /*: void */ {
     const controls = document.createElement('div')
     controls.className = 'hidden'
     controls.id = 'controls'
@@ -68,9 +90,9 @@ export function gridDisplay (
   }
 
   function makeShowWorkingToggleControl (
-    controls /* :HTMLElement */,
-    showWorking /* :boolean */
-  ) /* :void */ {
+    controls /*: HTMLElement */,
+    showWorking /*: boolean */
+  ) /*: void */ {
     const showWorkingToggle = document.createElement('i')
     // controls.className = 'hidden'
     showWorkingToggle.classList.add('fa')
@@ -104,7 +126,9 @@ export function gridDisplay (
     // body
   }
 
-  function toggleShowWorking (config) /* :void */ {
+  function toggleShowWorking (
+    config /*: config */
+  ) /*: void */ {
     config.SHOW_WORKING = !config.SHOW_WORKING
     config.CLICK = getClick(config.SHOW_WORKING, config.FPS, config.ACCELLERATION)
     clearShowWorkingCellsDisplay(
@@ -114,41 +138,11 @@ export function gridDisplay (
     )
   }
 
-  // function makeSpeedControl (
-  //   speed /* :string */,
-  //   icon /* :string */,
-  //   controls /* :HTMLElement */,
-  //   algorithm /* Object */
-  // ) /* :void */ {
-  //   const speedControl = document.createElement('i')
-  //   speedControl.classList.add('fa')
-  //   speedControl.classList.add('fa-' + icon)
-  //   speedControl.setAttribute('data-speed', speed)
-  //   speedControl.id = 'speed-' + speed
-  //   controls.appendChild(speedControl)
-  //   Rx.Observable.fromEvent(speedControl, 'click')
-  //     .subscribe(event => {
-  //       console.log(event.target)
-  //     })
-  // }
-
-  // function makeSpeedControls (
-  //   controls /* :HTMLElement */
-  // ) /* :void */ {
-  //   makeSpeedControl('0.25', 'female', controls)
-  //   makeSpeedControl('0.5', 'bicycle', controls)
-  //   makeSpeedControl('0.5', 'car', controls)
-  //   makeSpeedControl('1', 'train', controls)
-  //   makeSpeedControl('1.25', 'fighter-jet', controls)
-  //   makeSpeedControl('1.5', 'rocket', controls)
-  //   makeSpeedControl('1.75', 'space-shuttle', controls)
-  // }
-
   function setCurrentCellDisplayToActive (
-    i /* :number */,
-    containerId /* :string */,
-    showWorking /* :boolean */
-  ) /* :void */ {
+    i /*: number */,
+    containerId /*: string */,
+    showWorking /*: boolean */
+  ) /*: void */ {
     if (!showWorking) {
       return
     }
@@ -156,11 +150,11 @@ export function gridDisplay (
   }
 
   function clearActiveCellsDisplay (
-    _1 /* :number */,
-    _2 /* :number */,
-    containerId /* :string */,
-    showWorking /* :boolean */
-  ) /* :void */ {
+    _1 /*: number */,
+    _2 /*: number */,
+    containerId /*: string */,
+    showWorking /*: boolean */
+  ) /*: void */ {
     if (!showWorking) {
       return
     }
@@ -171,11 +165,11 @@ export function gridDisplay (
   }
 
   function swapActiveCellsDisplay (
-    _1 /* :number */,
-    _2 /* :number */,
-    containerId /* :string */,
-    showWorking /* :boolean */
-  ) /* :void */ {
+    _1 /*: number */,
+    _2 /*: number */,
+    containerId /*: string */,
+    showWorking /*: boolean */
+  ) /*: void */ {
     if (!showWorking) {
       return
     }
@@ -186,9 +180,9 @@ export function gridDisplay (
   }
 
   function setNewCellColour (
-    movingCell/* :Object */,
-    newValue/* :number */
-  ) /* :Object */ {
+    movingCell /*: Object */,
+    newValue /*: number */
+  ) /*: Object */ {
     // movingCell.style.opacity = newValue / 100
     // movingCell.style.background = `rgba(0,0,0,${newValue})`
     const newColour = 255 - Math.ceil(255 * newValue)
@@ -197,9 +191,9 @@ export function gridDisplay (
   }
 
   function getMatrix (
-    a/* :Array<Object> */,
-    cols/* :number */
-  ) {
+    a /*: Array<Object> */,
+    cols /*: number */
+  ) /*: Array<Array<Object>> */ {
     return a.reduce((grid, currentValue, currentIndex) => {
       const lastIndex = grid.length - 1
       grid[lastIndex].push(currentValue)
@@ -213,9 +207,9 @@ export function gridDisplay (
   }
 
   function getMatrixXYValues (
-    matrix/* :Array<Array<Object>> */,
-    cellWidth/* :number */,
-    cellHeight/* :number */
+    matrix /*: Array<Array<Object>> */,
+    cellWidth /*: number */,
+    cellHeight /*: number */
   ) {
     return matrix.map((row, currentIndex) => {
       const y = currentIndex * cellHeight
@@ -229,12 +223,12 @@ export function gridDisplay (
   }
 
   function setCellDisplay (
-    i/* :number */,
-    action/* :string */,
-    className/* :string */,
-    containerId /* :string */,
-    showWorking /* :boolean */
-  ) /* :void */ {
+    i /*: number */,
+    action /*: string */,
+    className /*: string */,
+    containerId /*: string */,
+    showWorking /*: boolean */
+  ) /*: void */ {
     if (!showWorking) {
       return
     }
@@ -249,10 +243,10 @@ export function gridDisplay (
   }
 
   function clearCellDisplay (
-    i/* :number */,
-    className/* :string */,
-    containerId /* :string */
-  ) /* :void */ {
+    i /*: number */,
+    className /*: string */,
+    containerId /*: string */
+  ) /*: void */ {
     const currentCell = getElementById(containerId + '_' + i)
     if (!currentCell) {
       throw new Error('Element ' + containerId + '_ ' + i + ' does not exist.')
@@ -261,7 +255,7 @@ export function gridDisplay (
   }
 
   function random (
-    max/* :number */
+    max /*: number */
   ) {
     const min = 0
     max = Math.floor(max)
@@ -269,15 +263,15 @@ export function gridDisplay (
   }
 
   function swapCells (
-    a/* :Array<Object> */,
-    _2/* :number */,
-    _1/* :number */,
-    containerId /* :string */,
-    constantTransitionSpeed/* :boolean */,
-    maxSecondsTransitionInterval/* :number */,
-    cols/* :number */,
-    rows/* :number */
-  ) /* :Promise<Array<Object>> */ {
+    a /*: Array<Object> */,
+    _2 /*: number */,
+    _1 /*: number */,
+    containerId /*: string */,
+    constantTransitionSpeed /*: boolean */,
+    maxSecondsTransitionInterval /*: number */,
+    cols /*: number */,
+    rows /*: number */
+  ) /*: Promise<Array<Object>> */ {
     const _1CellData = a[_1]
     const _2CellData = a[_2]
     const _1Cell = getElementById(containerId + _1CellData.id) || {}
@@ -314,18 +308,17 @@ export function gridDisplay (
   }
 
   function moveCell (
-    movingCell/* :Object */,
-    newX/* :number */,
-    newY/* :number */,
-    transitionSpeed/* :number */
-  ) /* :Object */ {
+    movingCell /*: HTMLElement */,
+    newX /*: number */,
+    newY /*: number */,
+    transitionSpeed /*: number */
+  ) /*: Object */ {
     if (!movingCell.id) {
       throw new Error('movingCell() called without an element to move')
     }
     return new Promise((resolve) => {
       movingCell.addEventListener('transitionend', function (e) { // eslint-disable-line no-unused-vars
-        // //
-        movingCell.style.zIndex = 1
+        movingCell.style.zIndex = '1'
         movingCell.removeEventListener(
           'transitionend',
           resolve
@@ -336,22 +329,22 @@ export function gridDisplay (
         movingCell.style.transition = `left ${transitionSpeed}s linear, top ${transitionSpeed}s linear`
         movingCell.style.top = `${newY}px`
         movingCell.style.left = `${newX}px`
-        movingCell.style.zIndex = 2
+        movingCell.style.zIndex = '2'
       })
     })
   }
 
   function getTransitionSpeed (
-    currentX/* :number */,
-    currentY/* :number */,
-    newX/* :number */,
-    newY/* :number */,
-    containerId /* :string */,
-    constantTransitionSpeed/* :boolean */,
-    maxSecondsTransitionInterval/* :number */,
-    cols/* :number */,
-    rows/* :number */
-  ) /* :number */ {
+    currentX /*: number */,
+    currentY /*: number */,
+    newX /*: number */,
+    newY /*: number */,
+    containerId /*: string */,
+    constantTransitionSpeed /*: boolean */,
+    maxSecondsTransitionInterval /*: number */,
+    cols /*: number */,
+    rows /*: number */
+  ) /*: number */ {
     if (constantTransitionSpeed) {
       return maxSecondsTransitionInterval
     }
@@ -370,10 +363,10 @@ export function gridDisplay (
   }
 
   function moveCellBackQuickly (
-    movingCell/* :Object */,
-    oldX/* :number */,
-    oldY/* :number */
-  ) /* :Object */ {
+    movingCell /*: Object */,
+    oldX /*: number */,
+    oldY /*: number */
+  ) /*: Object */ {
     movingCell.style.transition = ''
     movingCell.style.top = oldY + 'px'
     movingCell.style.left = oldX + 'px'
@@ -381,10 +374,10 @@ export function gridDisplay (
   }
 
   function getClick (
-    SHOW_WORKING /* :boolean */,
-    FPS /* :number */,
-    ACCELLERATION /* :number */
-  ) /* :number */ {
+    SHOW_WORKING /*: boolean */,
+    FPS /*: number */,
+    ACCELLERATION /*: number */
+  ) /*: number */ {
     if (!SHOW_WORKING) {
       return 0
     }
@@ -392,10 +385,10 @@ export function gridDisplay (
   }
 
   function clearShowWorkingCellsDisplay (
-    COLS /* : number */,
-    ROWS /* : number */,
-    containerId /* :string */
-  ) /* : void */ {
+    COLS /*: number */,
+    ROWS /*: number */,
+    containerId /*: string */
+  ) /*: void */ {
     for (let i = 0; i < COLS * ROWS; ++i) {
       clearCellDisplay(i, 'active', containerId)
       clearCellDisplay(i, 'active-min', containerId)
@@ -428,7 +421,7 @@ export function gridDisplay (
   // HELPERS
   // --------------------------------- //
   function getGridContainer (
-    id /* :string */
+    id /*: string */
   ) /*: HTMLElement */ {
     if (id) {
       try {
@@ -448,7 +441,7 @@ export function gridDisplay (
     return body
   }
   function getElementById (
-    id /* :string */
+    id /*: string */
   ) /*: HTMLElement */ {
     const element = document.getElementById(id)
     if (!element) {

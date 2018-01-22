@@ -16,8 +16,8 @@ export function selectionSortFactory (
     LOOP = true,
     RELOAD_INTERVAL = 1000,
     FINISH_COUNTER = {}
-  }/* :Object */,
-  gridDisplay/* :function */
+  } /*: config */,
+  gridDisplay /*: function */
 ) /* :Object */ {
   const config = {
     CONTAINER_ID,
@@ -37,7 +37,7 @@ export function selectionSortFactory (
   const D = gridDisplay()
   config.CLICK = D.getClick(config.SHOW_WORKING, config.FPS, config.ACCELLERATION)
 
-  function run ()/* :void */ {
+  function run () /*: void */ {
     // The input
     const a = makeArrayToSort(config.COLS, config.ROWS)
     // The display
@@ -53,9 +53,9 @@ export function selectionSortFactory (
   }
 
   function loop (
-    a/* :Array<Object> */,
-    i/* :number */
-  )/* :null|void */ {
+    a /*: Array<Object> */,
+    i /*: number */
+  ) /*: null|void */ {
     // reloadPageIfFinishedLooping(a.length, i)
     if (
       config.LOOP &&
@@ -77,8 +77,8 @@ export function selectionSortFactory (
   }
 
   function setReload (
-    reloadInterval/* :number */
-  )/* :void */ {
+    reloadInterval /*: number */
+  ) /*: void */ {
     if (thereAreMultipleAlgorithmsOnView()) {
       config.FINISH_COUNTER.ALGORITHMS.forEach((algorithm) => {
         setTimeout(() => { algorithm.run() }, reloadInterval)
@@ -100,7 +100,7 @@ export function selectionSortFactory (
     return false
   }
 
-  function allAlgorithmsHaveFinished ()/* :boolean */ {
+  function allAlgorithmsHaveFinished () /*: boolean */ {
     if (!thereAreMultipleAlgorithmsOnView()) {
       return true
     }
@@ -203,9 +203,9 @@ export function selectionSortFactory (
   }
 
   function swapArrayElements (
-    a/* :Array<Object> */,
-    i/* :number */,
-    minIndex/* :number */
+    a /*: Array<Object> */,
+    i /*: number */,
+    minIndex /*: number */
   ) /* :Array<Object> */ {
     const tmpValue = a[i].value
     a[i].value = a[minIndex].value
@@ -214,8 +214,8 @@ export function selectionSortFactory (
   }
 
   function makeArrayToSort (
-    cols/* :number */,
-    rows/* :number */
+    cols /*: number */,
+    rows /*: number */
   ) /* :Array<Object> */ {
     const numItems = cols * rows
     const a = []
