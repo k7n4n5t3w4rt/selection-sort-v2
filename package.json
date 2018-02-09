@@ -1,36 +1,30 @@
 {
   "name": "selection-sort",
-  "homepage": "https://k7n4n5t3w4rt.github.io/selection-sort-v2/",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-redux": "^5.0.6",
-    "react-scripts": "1.0.17",
-    "redux": "^3.7.2",
+    "react-scripts": "^1.1.1",
     "rxjs": "^5.5.6"
   },
-  "scripts": {
-    "eslint": "eslint --fix --cache .",
-    "fixpack": "fixpack",
-    "flow_check": "flow check",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
-  },
   "devDependencies": {
-    "eslint": "^4.16.0",
-    "eslint-config-standard": "^11.0.0-beta.0",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-node": "^5.2.1",
-    "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-standard": "^3.0.1",
     "fixpack": "^2.3.1",
     "flow-bin": "^0.62.0",
-    "gh-pages": "^1.1.0"
+    "gh-pages": "^1.1.0",
+    "prettier": "^1.10.2"
+  },
+  "homepage": "https://k7n4n5t3w4rt.github.io/selection-sort-v2/",
+  "private": true,
+  "scripts": {
+    "build": "react-scripts build",
+    "deploy": "gh-pages -d build",
+    "eject": "react-scripts eject",
+    "eslint": "eslint ./src",
+    "fixpack": "fixpack",
+    "flow": "flow check",
+    "predeploy": "npm run build",
+    "prettier": "prettier --write \"src/**/*.js\"",
+    "start": "react-scripts start",
+    "test": "react-scripts test --env=jsdom"
   }
 }
