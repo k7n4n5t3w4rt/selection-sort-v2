@@ -1,18 +1,28 @@
 // @flow
+// -------------------------------------------
+// Packages
+// -------------------------------------------
 import * as React from 'react'
 import sizeMe from 'react-sizeme'
+// -------------------------------------------
+// SelectionSort
+// -------------------------------------------
 import Grid from './Grid.js'
-// import { selectionSort } from './selection-sort/index.js'
+import gridService from './services/gridService.js'
+// -------------------------------------------
 // CSS
+// -------------------------------------------
 import './SelectionSort.css'
-import './grid-display/main.css'
-import './grid-display/font-awesome/css/font-awesome.min.css'
+// -------------------------------------------
 // Flow
+// -------------------------------------------
 type Cell = {
   value: number,
-  id?: string,
-  x?: number,
-  y?: number
+  id: string,
+  width: number,
+  height: number,
+  x: number,
+  y: number
 }
 type FinishCounter = {
   ALGORITHMS: [],
@@ -34,42 +44,40 @@ type Props = {
   reloadInterval?: number,
   constantTransitionSpeed?: false
 }
-
 type State = {
-  a: Cell[]
+  grid: Cell[][]
 }
-
+// -------------------------------------------
+// Component
+// -------------------------------------------
 class SelectionSort extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {
-      a: makeArrayToSort(props.cols, props.rows)
+      grid: gridService(
+        arrayToSort(props.cols, props.rows),
+        props.size.width,
+        props.size.height,
+        props.cols,
+        props.rows
+      )
     }
   }
-
   componentDidMount() {
     setInterval(() => {
-      this.updateStateArrayAndRender(
-        makeArrayToSort(this.props.cols, this.props.rows)
-      )
-    }, 50)
-  }
-
-  updateStateArrayAndRender(a: Cell[]): mixed {
-    this.setState({
-      a
-    })
+      this.setState({
+        grid: gridService(
+          arrayToSort(this.props.cols, this.props.rows),
+          this.props.size.width,
+          this.props.size.height,
+          this.props.cols,
+          this.props.rows
+        )
+      })
+    }, 1000)
   }
 
   render = () => {
-    const displayProps = {
-      a: this.state.a,
-      updateArray: this.updateStateArrayAndRender,
-      containerWidth: this.props.size.width,
-      containerHeight: this.props.size.height,
-      cols: this.props.cols,
-      rows: this.props.rows
-    }
     // SHOW_WORKING: props.showWorking || true,
     // FPS: props.fps || 10,
     // ACCELLERATION: props.accelleration || 1,
@@ -79,7 +87,7 @@ class SelectionSort extends React.Component<Props, State> {
     // CONSTANT_TRANSITION_SPEED: props.constantTransitionSpeed || false
     return (
       <Grid
-        {...displayProps}
+        grid={this.state.grid}
         style={{
           display: 'block',
           width: '100%',
@@ -90,15 +98,13 @@ class SelectionSort extends React.Component<Props, State> {
   }
 }
 
-function makeArrayToSort(cols: number, rows: number): Cell[] {
+function arrayToSort(cols: number, rows: number): number[] {
   const a = []
   let randomNumber = 0
   const numItems = cols * rows
   for (let i = 0; i < numItems; i++) {
     randomNumber = Math.random()
-    a.push({
-      value: randomNumber
-    })
+    a.push(randomNumber)
   }
   return a
 }
