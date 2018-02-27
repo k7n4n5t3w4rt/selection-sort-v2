@@ -24,27 +24,23 @@ type Cell = {
   x: number,
   y: number
 }
-type FinishCounter = {
-  ALGORITHMS: [],
-  COUNT: number
-}
 type Props = {
   size: {
     width: number,
     height: number
   },
   cols: number,
-  rows: number,
-  finishCounter?: FinishCounter,
-  showWorking?: boolean,
-  fps?: number,
-  accelleration?: number,
-  maxSecondsTransitionIinterval?: number,
-  loop?: boolean,
-  reloadInterval?: number,
-  constantTransitionSpeed?: false
+  rows: number
 }
+// showWorking?: boolean,
+// fps?: number,
+// accelleration?: number,
+// maxSecondsTransitionIinterval?: number,
+// loop?: boolean,
+// reloadInterval?: number,
+// constantTransitionSpeed?: false
 type State = {
+  a: number[],
   grid: Cell[][]
 }
 // -------------------------------------------
@@ -53,9 +49,11 @@ type State = {
 class SelectionSort extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
+    const a = arrayToSort(props.cols, props.rows)
     this.state = {
+      a,
       grid: gridService(
-        arrayToSort(props.cols, props.rows),
+        a,
         props.size.width,
         props.size.height,
         props.cols,
@@ -63,20 +61,6 @@ class SelectionSort extends React.Component<Props, State> {
       )
     }
   }
-  componentDidMount() {
-    setInterval(() => {
-      this.setState({
-        grid: gridService(
-          arrayToSort(this.props.cols, this.props.rows),
-          this.props.size.width,
-          this.props.size.height,
-          this.props.cols,
-          this.props.rows
-        )
-      })
-    }, 1000)
-  }
-
   render = () => {
     // SHOW_WORKING: props.showWorking || true,
     // FPS: props.fps || 10,
@@ -95,6 +79,50 @@ class SelectionSort extends React.Component<Props, State> {
         }}
       />
     )
+  }
+  componentDidMount() {
+    function loop(a: number[], i: number): null | void {
+      const minIndex = findMinIndex(a, i)
+      // If this one is already in the right position
+      // jump to the next cell and return out
+      if (minIndex === i) {
+        skipToNextLoop(a, i, minIndex)
+        return null
+      }
+      const newA = swapArrayElements(a, i, minIndex)
+      this.setState
+      loop(a, i)
+    }
+
+    function skipToNextLoop(a: number[], i: number, minIndex: number): void {
+      loop(a, ++i)
+    }
+
+    function findMinIndex(a: number[], j: number): number {
+      let minValue = a[j]
+      let minIndex = j
+      for (; j <= a.length; ++j) {
+        if (j === a.length) {
+          return minIndex
+        } else if (a[j] < minValue) {
+          minValue = a[j]
+          minIndex = j
+        }
+      }
+      return minIndex
+    }
+
+    function swapArrayElements(
+      a: number[],
+      i: number,
+      minIndex: number
+    ): number[] {
+      const tmpValue = a[i]
+      a[i] = a[minIndex]
+      a[minIndex] = tmpValue
+      return a
+    }
+    loop(this.state.a, 0)
   }
 }
 
