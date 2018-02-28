@@ -40,7 +40,6 @@ type Props = {
 // reloadInterval?: number,
 // constantTransitionSpeed?: false
 type State = {
-  a: number[],
   grid: Cell[][]
 }
 // -------------------------------------------
@@ -49,11 +48,17 @@ type State = {
 class SelectionSort extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
-    const a = arrayToSort(props.cols, props.rows)
+    const self: Object = this
+    self.i = 0
+    if (props.click) {
+      self.click = props.click
+    } else {
+      self.click = 1000
+    }
+    self.a = arrayToSort(props.cols, props.rows)
     this.state = {
-      a,
       grid: gridService(
-        a,
+        self.a,
         props.size.width,
         props.size.height,
         props.cols,
@@ -80,23 +85,27 @@ class SelectionSort extends React.Component<Props, State> {
       />
     )
   }
-  componentDidMount() {
-    function loop(a: number[], i: number): null | void {
-      const minIndex = findMinIndex(a, i)
+  componentWillMount() {
+    const self: Object = this
+    self.loopTimer = setInterval(() => {
+      const minIndex = findMinIndex(self.a, self.i)
       // If this one is already in the right position
       // jump to the next cell and return out
-      if (minIndex === i) {
-        skipToNextLoop(a, i, minIndex)
-        return null
+      if (self.i !== minIndex) {
+        const newA = swapArrayElements(self.a, self.i, minIndex)
+        self.a = newA
+        this.setState({
+          grid: gridService(
+            newA,
+            this.props.size.width,
+            this.props.size.height,
+            this.props.cols,
+            this.props.rows
+          )
+        })
       }
-      const newA = swapArrayElements(a, i, minIndex)
-      this.setState
-      loop(a, i)
-    }
-
-    function skipToNextLoop(a: number[], i: number, minIndex: number): void {
-      loop(a, ++i)
-    }
+      ++self.i
+    }, self.click)
 
     function findMinIndex(a: number[], j: number): number {
       let minValue = a[j]
@@ -118,11 +127,15 @@ class SelectionSort extends React.Component<Props, State> {
       minIndex: number
     ): number[] {
       const tmpValue = a[i]
-      a[i] = a[minIndex]
-      a[minIndex] = tmpValue
-      return a
+      const newA = [...a]
+      newA[i] = newA[minIndex]
+      newA[minIndex] = tmpValue
+      return newA
     }
-    loop(this.state.a, 0)
+  }
+  componentWillUnmount() {
+    const self: Object = this
+    clearInterval(self.loopTimer)
   }
 }
 
