@@ -89,11 +89,10 @@ class SelectionSort extends React.Component<Props, State> {
     const self: Object = this
     self.loopTimer = setInterval(() => {
       const minIndex = findMinIndex(self.a, self.i)
-      // If this one is already in the right position
-      // jump to the next cell and return out
+      // If this one is already in the right
+      // position do nothing
       if (self.i !== minIndex) {
         const newA = swapArrayElements(self.a, self.i, minIndex)
-        self.a = newA
         this.setState({
           grid: gridService(
             newA,
@@ -103,22 +102,28 @@ class SelectionSort extends React.Component<Props, State> {
             this.props.rows
           )
         })
+        self.a = newA
       }
       ++self.i
     }, self.click)
 
     function findMinIndex(a: number[], j: number): number {
       let minValue = a[j]
-      let minIndex = j
-      for (; j <= a.length; ++j) {
-        if (j === a.length) {
-          return minIndex
-        } else if (a[j] < minValue) {
-          minValue = a[j]
-          minIndex = j
-        }
-      }
-      return minIndex
+      return a.reduce(
+        (
+          minIndex: number,
+          currentValue: number,
+          currentIndex: number
+        ): number => {
+          if (currentIndex > minIndex && currentValue < minValue) {
+            minValue = currentValue
+            return currentIndex
+          } else {
+            return minIndex
+          }
+        },
+        j
+      )
     }
 
     function swapArrayElements(
