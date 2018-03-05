@@ -6,10 +6,10 @@ import * as React from 'react'
 import sizeMe from 'react-sizeme'
 import qs from 'qs'
 // -------------------------------------------
-// SelectionSort
+// App
 // -------------------------------------------
 import Grid from './Grid.js'
-import gridService from './services/gridService.js'
+import D from './services/gridService.js'
 // -------------------------------------------
 // CSS
 // -------------------------------------------
@@ -33,20 +33,13 @@ type Props = {
   cols: number,
   rows: number
 }
-// showWorking?: boolean,
-// fps?: number,
-// accelleration?: number,
-// maxSecondsTransitionIinterval?: number,
-// loop?: boolean,
-// reloadInterval?: number,
-// constantTransitionSpeed?: false
 type State = {
   grid: Cell[][]
 }
-// -------------------------------------------
-// Component
-// -------------------------------------------
+
+// ====================================================
 class SelectionSort extends React.Component<Props, State> {
+  // -------------------------------------------
   constructor(props: Props) {
     super(props)
     const self: Object = this
@@ -80,7 +73,7 @@ class SelectionSort extends React.Component<Props, State> {
     self.a = arrayToSort(self.cols, self.rows)
     // Put a grid matrix of columns and rows into the state
     this.state = {
-      grid: gridService.gridFactory(
+      grid: D.gridFactory(
         self.a,
         props.size.width,
         props.size.height,
@@ -89,14 +82,8 @@ class SelectionSort extends React.Component<Props, State> {
       )()
     }
   }
+  // -------------------------------------------
   render = () => {
-    // SHOW_WORKING: props.showWorking || true,
-    // FPS: props.fps || 10,
-    // ACCELLERATION: props.accelleration || 1,
-    // MAX_SECONDS_TRANSITION_INTERVAL: props.maxSecondsTransitionIinterval || 2,
-    // LOOP: props.loop || true,
-    // RELOAD_INTERVAL: props.reloadInterval || 2000,
-    // CONSTANT_TRANSITION_SPEED: props.constantTransitionSpeed || false
     return (
       <Grid
         grid={this.state.grid}
@@ -108,40 +95,35 @@ class SelectionSort extends React.Component<Props, State> {
       />
     )
   }
+  // -------------------------------------------
   componentWillMount() {
     const self: Object = this
     // setInterval will never have an interval of 0
     //   https://goo.gl/T6Axt4
     // Suggested 0 interval implementation:
     //   https://dbaron.org/log/20100309-faster-timeouts
-    function loop() {
+    // -------------------------------------------
+    async function loop() {
+      // Return out if we have ordered the whole array
       if (self.i === self.a.length) {
-        clearInterval(self.loopTimer)
         return true
       }
-      const minIndex = findMinIndex(self.a, self.i)
-      // If this one is already in the right
-      // position do nothing
-      if (self.i !== minIndex) {
-        const newA = swapArrayElements(self.a, self.i, minIndex)
-        self.setState({
-          grid: gridService.gridFactory(
-            newA,
-            self.props.size.width,
-            self.props.size.height,
-            self.cols,
-            self.rows
-          )()
-        })
-        self.a = newA
-      }
-      ++self.i
-      self.loopTimer = setTimeout(loop, self.click)
-    }
+      await D.wait(self.click)
+      let minValue = self.a[self.i]
 
-    function findMinIndex(a: number[], j: number): number {
-      let minValue = a[j]
-      return a.reduce(
+      // NEXT STEPS:
+      // [1] Make this back into a for loop so I can use await
+      // [2] Change self.a so it can hold the state of each item
+      //     so it can flow through to the Grid display, eg:
+      //
+      //       type a = {
+      //         value: number,
+      //         state: string
+      //       }[]
+      //
+      // [3] Grid uses the a[n].state property to set a CSS class on the cell
+
+      const minIndex = self.a.reduce(
         (
           minIndex: number,
           currentValue: number,
@@ -154,10 +136,33 @@ class SelectionSort extends React.Component<Props, State> {
             return minIndex
           }
         },
-        j
+        self.i
       )
+      // If this one is already in the right
+      // position do nothing
+      if (self.i !== minIndex) {
+        const newA = swapArrayElements(self.a, self.i, minIndex)
+        updateDisplay(newA)
+        self.a = newA
+      }
+      ++self.i
+      //self.loopTimer = setTimeout(loop, self.click)
+      loop()
     }
-
+    // -------------------------------------------
+    function updateDisplay(newA: number[]) {
+      // body
+      self.setState({
+        grid: D.gridFactory(
+          newA,
+          self.props.size.width,
+          self.props.size.height,
+          self.cols,
+          self.rows
+        )()
+      })
+    }
+    // -------------------------------------------
     function swapArrayElements(
       a: number[],
       i: number,
@@ -171,6 +176,7 @@ class SelectionSort extends React.Component<Props, State> {
     }
     loop()
   }
+  // -------------------------------------------
   componentWillUnmount() {
     const self: Object = this
     clearInterval(self.loopTimer)

@@ -37,6 +37,18 @@ function gridFactory(
   }
 }
 
+function wait(click: number): Promise<void> {
+  return new Promise(resolve => {
+    setTimeout(resolve, click)
+  })
+}
+
+export default {
+  gridFactory,
+  wait
+}
+
+// 'private'
 function matrix(a: number[], cols: number): number[][] {
   return a.reduce(
     (grid, currentValue, currentIndex) => {
@@ -49,8 +61,4 @@ function matrix(a: number[], cols: number): number[][] {
     },
     [[]]
   )
-}
-
-export default {
-  gridFactory
 }

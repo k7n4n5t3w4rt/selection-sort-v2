@@ -2,23 +2,32 @@ describe('SelectionSort', function() {
   const click = 5
   const rows = 10
   const cols = 10
-  it('.should() - assert that <title> is correct', function() {
-    // https://on.cypress.io/visit
-    cy.visit(`http://localhost:3000?click=${click}&cols=${cols}&rows=${rows}`)
-    cy.title().should('include', 'SelectionSort')
-  })
-
-  context('Traversal', function() {
+  // ====================================================
+  context('Page', function() {
     beforeEach(function() {
       cy.visit(`http://localhost:3000?click=${click}&cols=${cols}&rows=${rows}`)
     })
-    it('.find() - get descendant DOM elements of the selector', function() {
-      // https://on.cypress.io/find
+    // ----------------------------------------------------
+    it('The <title> is correct', function() {
+      cy.title().should('include', 'SelectionSort')
+    })
+  })
+
+  // ====================================================
+  context('The Grid', function() {
+    beforeEach(function() {
+      cy.visit(`http://localhost:3000?click=${click}&cols=${cols}&rows=${rows}`)
+    })
+
+    // ----------------------------------------------------
+    it('There are the right number of cells', function() {
       cy.get('#root ul li').should('have.length', rows * cols)
     })
+
+    // ----------------------------------------------------
     it('The cells are in order...', function() {
       const bgCs = {}
-      const someExtraTime = click * 2 * (cols * rows)
+      const someExtraTime = click * 4 * (cols * rows)
       cy
         .wait(click * (cols * rows) + someExtraTime)
         .get('#root ul li')
