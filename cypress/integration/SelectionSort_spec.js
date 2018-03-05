@@ -1,7 +1,7 @@
 describe('SelectionSort', function() {
   const click = 5
-  const rows = 20
-  const cols = 20
+  const rows = 10
+  const cols = 10
   it('.should() - assert that <title> is correct', function() {
     // https://on.cypress.io/visit
     cy.visit(`http://localhost:3000?click=${click}&cols=${cols}&rows=${rows}`)
@@ -30,7 +30,7 @@ describe('SelectionSort', function() {
             bgCs[$cells[i].id] = parseInt(colourValue, 10)
           })
           let lastKey = ''
-          Object.keys(bgCs).map(key => {
+          Object.keys(bgCs).forEach(key => {
             if (lastKey !== '') {
               expect(bgCs[key]).to.be.lte(bgCs[lastKey])
             }

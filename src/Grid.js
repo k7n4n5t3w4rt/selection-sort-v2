@@ -6,8 +6,8 @@ import * as React from 'react'
 // -------------------------------------------
 // CSS
 // -------------------------------------------
-import './grid-display/main.css'
-import './grid-display/font-awesome/css/font-awesome.min.css'
+import './Grid.css'
+import './font-awesome/css/font-awesome.min.css'
 // -------------------------------------------
 // Flow
 // -------------------------------------------

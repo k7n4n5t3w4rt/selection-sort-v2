@@ -80,13 +80,13 @@ class SelectionSort extends React.Component<Props, State> {
     self.a = arrayToSort(self.cols, self.rows)
     // Put a grid matrix of columns and rows into the state
     this.state = {
-      grid: gridService(
+      grid: gridService.gridFactory(
         self.a,
         props.size.width,
         props.size.height,
         self.cols,
         self.rows
-      )
+      )()
     }
   }
   render = () => {
@@ -125,13 +125,13 @@ class SelectionSort extends React.Component<Props, State> {
       if (self.i !== minIndex) {
         const newA = swapArrayElements(self.a, self.i, minIndex)
         self.setState({
-          grid: gridService(
+          grid: gridService.gridFactory(
             newA,
             self.props.size.width,
             self.props.size.height,
             self.cols,
             self.rows
-          )
+          )()
         })
         self.a = newA
       }

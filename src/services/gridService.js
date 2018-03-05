@@ -9,17 +9,32 @@ type Cell = {
   y: number
 }
 
-export default function gridService(
+function gridFactory(
   a: number[],
   containerWidth: number,
   containerHeight: number,
   cols: number,
   rows: number
-): Cell[][] {
+): () => Cell[][] {
   const cellWidth = containerWidth / parseInt(cols, 10)
   const cellHeight = containerHeight / parseInt(rows, 10)
-  const matrixOfPlainValues = matrix(a, cols)
-  return grid(matrixOfPlainValues, cellWidth, cellHeight)
+  const grid = matrix(a, cols)
+  return (): Cell[][] => {
+    const displayGrid = grid.map((row, currentIndex) => {
+      const y = currentIndex * cellHeight
+      return row.map((value, currentIndex) => {
+        return {
+          value,
+          id: '_' + currentIndex,
+          width: cellWidth,
+          height: cellHeight,
+          y: y,
+          x: currentIndex * cellWidth
+        }
+      })
+    })
+    return displayGrid
+  }
 }
 
 function matrix(a: number[], cols: number): number[][] {
@@ -36,23 +51,6 @@ function matrix(a: number[], cols: number): number[][] {
   )
 }
 
-function grid(
-  grid: number[][],
-  cellWidth: number,
-  cellHeight: number
-): Cell[][] {
-  const gridInQuestion = grid.map((row, currentIndex) => {
-    const y = currentIndex * cellHeight
-    return row.map((value, currentIndex) => {
-      return {
-        value,
-        id: '_' + currentIndex,
-        width: cellWidth,
-        height: cellHeight,
-        y: y,
-        x: currentIndex * cellWidth
-      }
-    })
-  })
-  return gridInQuestion
+export default {
+  gridFactory
 }
