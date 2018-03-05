@@ -4,6 +4,7 @@
 // -------------------------------------------
 import * as React from 'react'
 import sizeMe from 'react-sizeme'
+import qs from 'qs'
 // -------------------------------------------
 // SelectionSort
 // -------------------------------------------
@@ -50,19 +51,41 @@ class SelectionSort extends React.Component<Props, State> {
     super(props)
     const self: Object = this
     self.i = 0
-    if (props.click) {
+    const urlProps = qs.parse(window.location.search.substring(1))
+    // Set the `click` property  used for the basic loop frequency
+    if (urlProps.click) {
+      self.click = urlProps.click
+    } else if (props.click) {
       self.click = props.click
     } else {
       self.click = 1000
     }
-    self.a = arrayToSort(props.cols, props.rows)
+    // Set the `cols` property
+    if (urlProps.cols) {
+      self.cols = urlProps.cols
+    } else if (props.cols) {
+      self.cols = props.cols
+    } else {
+      self.cols = 1000
+    }
+    // Set the `rows` property
+    if (urlProps.rows) {
+      self.rows = urlProps.rows
+    } else if (props.rows) {
+      self.rows = props.rows
+    } else {
+      self.rows = 1000
+    }
+    // Generate an array of random values between 0 and 1
+    self.a = arrayToSort(self.cols, self.rows)
+    // Put a grid matrix of columns and rows into the state
     this.state = {
       grid: gridService(
         self.a,
         props.size.width,
         props.size.height,
-        props.cols,
-        props.rows
+        self.cols,
+        self.rows
       )
     }
   }
@@ -87,7 +110,15 @@ class SelectionSort extends React.Component<Props, State> {
   }
   componentWillMount() {
     const self: Object = this
+    // setInterval will never have an interval of 0
+    //   https://goo.gl/T6Axt4
+    // Suggested 0 interval implementation:
+    //   https://dbaron.org/log/20100309-faster-timeouts
     self.loopTimer = setInterval(() => {
+      if (self.i === self.a.length) {
+        clearInterval(self.loopTimer)
+        return true
+      }
       const minIndex = findMinIndex(self.a, self.i)
       // If this one is already in the right
       // position do nothing
@@ -98,8 +129,8 @@ class SelectionSort extends React.Component<Props, State> {
             newA,
             this.props.size.width,
             this.props.size.height,
-            this.props.cols,
-            this.props.rows
+            self.cols,
+            self.rows
           )
         })
         self.a = newA
