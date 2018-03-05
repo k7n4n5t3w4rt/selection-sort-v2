@@ -1,2 +1,4 @@
 [libs]
 ./flowtypes.js
+[ignore]
+.*/node_modules/*

@@ -114,7 +114,7 @@ class SelectionSort extends React.Component<Props, State> {
     //   https://goo.gl/T6Axt4
     // Suggested 0 interval implementation:
     //   https://dbaron.org/log/20100309-faster-timeouts
-    self.loopTimer = setInterval(() => {
+    function loop() {
       if (self.i === self.a.length) {
         clearInterval(self.loopTimer)
         return true
@@ -124,11 +124,11 @@ class SelectionSort extends React.Component<Props, State> {
       // position do nothing
       if (self.i !== minIndex) {
         const newA = swapArrayElements(self.a, self.i, minIndex)
-        this.setState({
+        self.setState({
           grid: gridService(
             newA,
-            this.props.size.width,
-            this.props.size.height,
+            self.props.size.width,
+            self.props.size.height,
             self.cols,
             self.rows
           )
@@ -136,7 +136,8 @@ class SelectionSort extends React.Component<Props, State> {
         self.a = newA
       }
       ++self.i
-    }, self.click)
+      self.loopTimer = setTimeout(loop, self.click)
+    }
 
     function findMinIndex(a: number[], j: number): number {
       let minValue = a[j]
@@ -168,6 +169,7 @@ class SelectionSort extends React.Component<Props, State> {
       newA[minIndex] = tmpValue
       return newA
     }
+    loop()
   }
   componentWillUnmount() {
     const self: Object = this
