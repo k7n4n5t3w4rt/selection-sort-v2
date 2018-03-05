@@ -1,59 +1,42 @@
-//
-// **** Kitchen Sink Tests ****
-//
-// This app was developed to demonstrate
-// how to write tests in Cypress utilizing
-// all of the available commands
-//
-// Feel free to modify this spec in your
-// own application as a jumping off point
-
-// Please read our "Introduction to Cypress"
-// https://on.cypress.io/introduction-to-cypress
-
-describe('Kitchen Sink', function() {
+describe('SelectionSort', function() {
+  const click = 5
+  const rows = 20
+  const cols = 20
   it('.should() - assert that <title> is correct', function() {
     // https://on.cypress.io/visit
-    cy.visit('http://localhost:3000?click=5&cols=4&rows=4')
-
-    // Here we've made our first assertion using a '.should()' command.
-    // An assertion is comprised of a chainer, subject, and optional value.
-
-    // https://on.cypress.io/should
-    // https://on.cypress.io/and
-
-    // https://on.cypress.io/title
+    cy.visit(`http://localhost:3000?click=${click}&cols=${cols}&rows=${rows}`)
     cy.title().should('include', 'SelectionSort')
-    //   ↲               ↲            ↲
-    // subject        chainer      value
   })
 
   context('Traversal', function() {
     beforeEach(function() {
-      cy.visit('http://localhost:3000?click=5&cols=4&rows=4')
+      cy.visit(`http://localhost:3000?click=${click}&cols=${cols}&rows=${rows}`)
     })
-
-    // Let's query for some DOM elements and make assertions
-
     it('.find() - get descendant DOM elements of the selector', function() {
       // https://on.cypress.io/find
-      cy.get('#root ul li').should('have.length', 16)
+      cy.get('#root ul li').should('have.length', rows * cols)
     })
-
-    it('.first() - get first DOM element', function() {
-      // https://on.cypress.io/first
+    it('The cells are in order...', function() {
+      const bgCs = {}
+      const someExtraTime = click * 2 * (cols * rows)
       cy
+        .wait(click * (cols * rows) + someExtraTime)
         .get('#root ul li')
-        .first()
-        .should('contain', '1')
-    })
-
-    it('.last() - get last DOM element', function() {
-      // https://on.cypress.io/last
-      cy
-        .get('.traversal-buttons .btn')
-        .last()
-        .should('contain', 'Submit')
+        .then($cells => {
+          $cells.each(i => {
+            const colourValue = $cells[i].style.backgroundColor.match(
+              /rgb\((\d+), \d+, \d+\)/
+            )[1]
+            bgCs[$cells[i].id] = parseInt(colourValue, 10)
+          })
+          let lastKey = ''
+          Object.keys(bgCs).map(key => {
+            if (lastKey !== '') {
+              expect(bgCs[key]).to.be.lte(bgCs[lastKey])
+            }
+            lastKey = key
+          })
+        })
     })
   })
 })
