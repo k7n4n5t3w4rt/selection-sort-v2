@@ -1,4 +1,16 @@
 // @flow
+// NEXT STEPS:
+// [1] Make a custom setTimeout which can have a 0 interval.
+// [2] Change self.a so it can hold the state of each item
+//     so it can flow through to the Grid display, eg:
+//
+//       type a = {
+//         value: number,
+//         state: string
+//       }[]
+//
+// [3] Grid uses the a[n].state property to set a CSS class on the cell
+
 // -------------------------------------------
 // Packages
 // -------------------------------------------
@@ -111,32 +123,25 @@ class SelectionSort extends React.Component<Props, State> {
       await D.wait(self.click)
       let minValue = self.a[self.i]
 
-      // NEXT STEPS:
-      // [1] Make this back into a for loop so I can use await
-      // [2] Change self.a so it can hold the state of each item
-      //     so it can flow through to the Grid display, eg:
-      //
-      //       type a = {
-      //         value: number,
-      //         state: string
-      //       }[]
-      //
-      // [3] Grid uses the a[n].state property to set a CSS class on the cell
-
-      const minIndex = self.a.reduce(
-        (
-          minIndex: number,
+      const minIndex = await self.a.reduce(
+        async (
+          minIndexPromise: Promise<number>,
           currentValue: number,
           currentIndex: number
-        ): number => {
+        ): Promise<number> => {
+          const minIndex = await minIndexPromise
+          // await D.wait(self.click)
+          console.log('minIndex:', minIndex)
           if (currentIndex > minIndex && currentValue < minValue) {
             minValue = currentValue
+            console.log('returning currentIndex:', currentIndex)
             return currentIndex
           } else {
+            console.log('returning minIndex:', minIndex)
             return minIndex
           }
         },
-        self.i
+        Promise.resolve(self.i)
       )
       // If this one is already in the right
       // position do nothing
