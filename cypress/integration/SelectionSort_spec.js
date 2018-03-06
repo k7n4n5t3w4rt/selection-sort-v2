@@ -1,7 +1,8 @@
 describe('SelectionSort', function() {
-  const click = 5
+  const click = 50
   const rows = 10
   const cols = 10
+  const numberOfWaits = 1
   // ====================================================
   context('Page', function() {
     beforeEach(function() {
@@ -27,9 +28,13 @@ describe('SelectionSort', function() {
     // ----------------------------------------------------
     it('The cells are in order...', function() {
       const bgCs = {}
-      const someExtraTime = click * 4 * (cols * rows)
+      const someExtraTime = 1000
+      let waitTime = click * numberOfWaits * (cols * rows) + someExtraTime
+      if (click === 0) {
+        waitTime = 10 * (cols * rows)
+      }
       cy
-        .wait(click * (cols * rows) + someExtraTime)
+        .wait(waitTime)
         .get('#root ul li')
         .then($cells => {
           $cells.each(i => {

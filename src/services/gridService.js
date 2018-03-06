@@ -1,4 +1,5 @@
-// @flow - https://flow.org/en/docs/react/types/
+// @flow
+// -------------------------------------------
 // Flow
 type Cell = {
   value: number,
@@ -9,6 +10,7 @@ type Cell = {
   y: number
 }
 
+// -------------------------------------------
 function gridFactory(
   a: number[],
   containerWidth: number,
@@ -37,9 +39,10 @@ function gridFactory(
   }
 }
 
+// -------------------------------------------
 function wait(click: number): Promise<void> {
   return new Promise(resolve => {
-    setTimeout(resolve, click)
+    window.setTimeoutZero(resolve, click)
   })
 }
 
@@ -48,7 +51,9 @@ export default {
   wait
 }
 
+// -------------------------------------------
 // 'private'
+// -------------------------------------------
 function matrix(a: number[], cols: number): number[][] {
   return a.reduce(
     (grid, currentValue, currentIndex) => {
@@ -62,3 +67,37 @@ function matrix(a: number[], cols: number): number[][] {
     [[]]
   )
 }
+
+// --------------------------------------------------
+// FROM: https://dbaron.org/log/20100309-faster-timeouts
+// --------------------------------------------------
+// Only add setZeroTimeout to the window object, and hide everything
+// else in a closure.
+;(function() {
+  var timeouts = []
+  var messageName = 'zero-timeout-message'
+
+  function setTimeoutZero(fn, click) {
+    if (click) {
+      setTimeout(fn, click)
+    } else {
+      timeouts.push(fn)
+      window.postMessage(messageName, '*')
+    }
+  }
+
+  function handleMessage(event) {
+    if (event.source === window && event.data === messageName) {
+      event.stopPropagation()
+      if (timeouts.length > 0) {
+        var fn = timeouts.shift()
+        fn()
+      }
+    }
+  }
+
+  window.addEventListener('message', handleMessage, true)
+
+  // Add the one thing we want added to the window object.
+  window.setTimeoutZero = setTimeoutZero
+})()

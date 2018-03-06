@@ -1,7 +1,6 @@
 // @flow
 // NEXT STEPS:
-// [1] Make a custom setTimeout which can have a 0 interval.
-// [2] Change self.a so it can hold the state of each item
+// [1] Change self.a so it can hold the state of each item
 //     so it can flow through to the Grid display, eg:
 //
 //       type a = {
@@ -9,7 +8,7 @@
 //         state: string
 //       }[]
 //
-// [3] Grid uses the a[n].state property to set a CSS class on the cell
+// [2] Grid uses the a[n].state property to set a CSS class on the cell
 
 // -------------------------------------------
 // Packages
@@ -110,10 +109,6 @@ class SelectionSort extends React.Component<Props, State> {
   // -------------------------------------------
   componentWillMount() {
     const self: Object = this
-    // setInterval will never have an interval of 0
-    //   https://goo.gl/T6Axt4
-    // Suggested 0 interval implementation:
-    //   https://dbaron.org/log/20100309-faster-timeouts
     // -------------------------------------------
     async function loop() {
       // Return out if we have ordered the whole array
@@ -131,13 +126,10 @@ class SelectionSort extends React.Component<Props, State> {
         ): Promise<number> => {
           const minIndex = await minIndexPromise
           // await D.wait(self.click)
-          console.log('minIndex:', minIndex)
           if (currentIndex > minIndex && currentValue < minValue) {
             minValue = currentValue
-            console.log('returning currentIndex:', currentIndex)
             return currentIndex
           } else {
-            console.log('returning minIndex:', minIndex)
             return minIndex
           }
         },
@@ -151,7 +143,6 @@ class SelectionSort extends React.Component<Props, State> {
         self.a = newA
       }
       ++self.i
-      //self.loopTimer = setTimeout(loop, self.click)
       loop()
     }
     // -------------------------------------------
