@@ -1,14 +1,14 @@
 // @flow
 // NEXT STEPS:
 // [1] Change self.a so it can hold the state of each item
-//     so it can flow through to the Grid display, eg:
+//     such that it can flow through to the Grid display, eg:
 //
 //       type a = {
 //         value: number,
-//         state: string
+//         className: string
 //       }[]
 //
-// [2] Grid uses the a[n].state property to set a CSS class on the cell
+// [2] Grid uses the a[n].className property to set a CSS class on the cell
 
 // -------------------------------------------
 // Packages
@@ -34,7 +34,12 @@ type Cell = {
   width: number,
   height: number,
   x: number,
-  y: number
+  y: number,
+  className: string
+}
+type ProtoCell = {
+  value: number,
+  className: string
 }
 type Props = {
   size: {
@@ -55,7 +60,7 @@ class SelectionSort extends React.Component<Props, State> {
     super(props)
     const self: Object = this
     self.i = 0
-    const urlProps = qs.parse(window.location.search.substring(1))
+    const urlProps: Object = qs.parse(window.location.search.substring(1))
     // Set the `click` property  used for the basic loop frequency
     if (urlProps.click) {
       self.click = urlProps.click
@@ -116,18 +121,18 @@ class SelectionSort extends React.Component<Props, State> {
         return true
       }
       await D.wait(self.click)
-      let minValue = self.a[self.i]
+      let minValue: number = self.a[self.i].value
 
-      const minIndex = await self.a.reduce(
+      const minIndex: number = await self.a.reduce(
         async (
           minIndexPromise: Promise<number>,
-          currentValue: number,
+          currentProtoCell: ProtoCell,
           currentIndex: number
         ): Promise<number> => {
-          const minIndex = await minIndexPromise
+          const minIndex: number = await minIndexPromise
           // await D.wait(self.click)
-          if (currentIndex > minIndex && currentValue < minValue) {
-            minValue = currentValue
+          if (currentIndex > minIndex && currentProtoCell.value < minValue) {
+            minValue = currentProtoCell.value
             return currentIndex
           } else {
             return minIndex
@@ -138,7 +143,7 @@ class SelectionSort extends React.Component<Props, State> {
       // If this one is already in the right
       // position do nothing
       if (self.i !== minIndex) {
-        const newA = swapArrayElements(self.a, self.i, minIndex)
+        const newA: ProtoCell[] = swapArrayElements(self.a, self.i, minIndex)
         updateDisplay(newA)
         self.a = newA
       }
@@ -146,7 +151,7 @@ class SelectionSort extends React.Component<Props, State> {
       loop()
     }
     // -------------------------------------------
-    function updateDisplay(newA: number[]) {
+    function updateDisplay(newA: ProtoCell[]): mixed {
       // body
       self.setState({
         grid: D.gridFactory(
@@ -160,14 +165,14 @@ class SelectionSort extends React.Component<Props, State> {
     }
     // -------------------------------------------
     function swapArrayElements(
-      a: number[],
+      a: ProtoCell[],
       i: number,
       minIndex: number
-    ): number[] {
-      const tmpValue = a[i]
-      const newA = [...a]
-      newA[i] = newA[minIndex]
-      newA[minIndex] = tmpValue
+    ): ProtoCell[] {
+      const tmpValue: number = a[i].value
+      const newA: ProtoCell[] = [...a]
+      newA[i].value = newA[minIndex].value
+      newA[minIndex].value = tmpValue
       return newA
     }
     loop()
@@ -179,13 +184,13 @@ class SelectionSort extends React.Component<Props, State> {
   }
 }
 
-function arrayToSort(cols: number, rows: number): number[] {
-  const a = []
-  let randomNumber = 0
-  const numItems = cols * rows
+function arrayToSort(cols: number, rows: number): ProtoCell[] {
+  const a: ProtoCell[] = []
+  let randomNumber: number = 0
+  const numItems: number = cols * rows
   for (let i = 0; i < numItems; i++) {
     randomNumber = Math.random()
-    a.push(randomNumber)
+    a.push({ value: randomNumber, className: 'normalCell' })
   }
   return a
 }

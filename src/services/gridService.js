@@ -7,12 +7,17 @@ type Cell = {
   width: number,
   height: number,
   x: number,
-  y: number
+  y: number,
+  className: string
+}
+type ProtoCell = {
+  value: number,
+  className: string
 }
 
 // -------------------------------------------
 function gridFactory(
-  a: number[],
+  a: ProtoCell[],
   containerWidth: number,
   containerHeight: number,
   cols: number,
@@ -24,14 +29,15 @@ function gridFactory(
   return (): Cell[][] => {
     const displayGrid = grid.map((row, currentIndex) => {
       const y = currentIndex * cellHeight
-      return row.map((value, currentIndex) => {
+      return row.map((protoCell, currentIndex) => {
         return {
-          value,
+          value: protoCell.value,
           id: '_' + currentIndex,
           width: cellWidth,
           height: cellHeight,
           y: y,
-          x: currentIndex * cellWidth
+          x: currentIndex * cellWidth,
+          className: protoCell.className
         }
       })
     })
@@ -54,11 +60,11 @@ export default {
 // -------------------------------------------
 // 'private'
 // -------------------------------------------
-function matrix(a: number[], cols: number): number[][] {
+function matrix(a: ProtoCell[], cols: number): ProtoCell[][] {
   return a.reduce(
-    (grid, currentValue, currentIndex) => {
+    (grid, currentProtoCell, currentIndex) => {
       const lastIndex = grid.length - 1
-      grid[lastIndex].push(currentValue)
+      grid[lastIndex].push(currentProtoCell)
       if (!((currentIndex + 1) % cols)) {
         grid.push([])
       }

@@ -17,7 +17,15 @@ type Cell = {
   width: number,
   height: number,
   x: number,
-  y: number
+  y: number,
+  className: string
+}
+type CellStyle = {
+  background: string,
+  width: string,
+  height: string,
+  top: string,
+  left: string
 }
 type Props = {
   grid: Cell[][]
@@ -43,16 +51,24 @@ function Grid({ grid }: Props) {
     <ul>
       {grid.map((row, i) => {
         return row.map((cell, j) => {
-          const cellColour = 255 - Math.ceil(255 * cell.value)
-          const cellStyle = {
+          const cellColour: number = 255 - Math.ceil(255 * cell.value)
+          const cellStyle: CellStyle = {
             background: `rgb(${cellColour},${cellColour},${cellColour})`,
             width: cell.width.toString() + 'px',
             height: cell.height.toString() + 'px',
             top: cell.y ? cell.y.toString() + 'px' : 0 + 'px',
             left: cell.x ? cell.x.toString() + 'px' : 0 + 'px'
           }
+          const cellClassName: string = cell.className
           ++idCount
-          return <li id={'_' + idCount} key={j} style={cellStyle} />
+          return (
+            <li
+              id={'_' + idCount}
+              key={j}
+              style={cellStyle}
+              className={cellClassName}
+            />
+          )
         })
       })}
     </ul>
