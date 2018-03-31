@@ -11,21 +11,14 @@ import './font-awesome/css/font-awesome.min.css'
 // -------------------------------------------
 // Flow
 // -------------------------------------------
-type Cell = {
-  value: number,
-  id: string,
-  width: number,
-  height: number,
-  x: number,
-  y: number,
-  className: string
-}
+import type { Cell } from './services/gridService.js'
 type CellStyle = {
   background: string,
   width: string,
   height: string,
   top: string,
-  left: string
+  left: string,
+  transition: string
 }
 type Props = {
   grid: Cell[][]
@@ -57,7 +50,8 @@ function Grid({ grid }: Props) {
             width: cell.width.toString() + 'px',
             height: cell.height.toString() + 'px',
             top: cell.y ? cell.y.toString() + 'px' : 0 + 'px',
-            left: cell.x ? cell.x.toString() + 'px' : 0 + 'px'
+            left: cell.x ? cell.x.toString() + 'px' : 0 + 'px',
+            transition: 'left 1s ease-out, right 1s ease-out'
           }
           const cellClassName: string = cell.className
           ++idCount

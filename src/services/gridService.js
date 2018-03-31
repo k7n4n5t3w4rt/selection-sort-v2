@@ -1,16 +1,17 @@
 // @flow
 // -------------------------------------------
 // Flow
-type Cell = {
+export type Cell = {
   value: number,
   id: string,
   width: number,
   height: number,
   x: number,
   y: number,
-  className: string
+  className: string,
+  positionalCSS: string
 }
-type ProtoCell = {
+export type ProtoCell = {
   value: number,
   className: string
 }
@@ -30,19 +31,25 @@ function gridFactory(
     const displayGrid = grid.map((row, currentIndex) => {
       const y = currentIndex * cellHeight
       return row.map((protoCell, currentIndex) => {
+        const x = currentIndex * cellWidth
         return {
           value: protoCell.value,
           id: '_' + currentIndex,
           width: cellWidth,
           height: cellHeight,
           y: y,
-          x: currentIndex * cellWidth,
-          className: protoCell.className
+          x: x,
+          className: protoCell.className,
+          positionalCSS: positionalCSS(x, y)
         }
       })
     })
     return displayGrid
   }
+}
+
+function positionalCSS(x, y) {
+  return `left: ${x}px; top: ${y}px`
 }
 
 // -------------------------------------------
