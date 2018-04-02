@@ -94,45 +94,37 @@ async function selectionSort(component: React.Component<Props, State>) {
   D.styleCellAsNext(grid, i, click, component)
   await D.wait(click)
   let minValue: number = a[i].value
+  // -----------------------------------------
+  // [2] Look ahead for the lightest cell in the
+  //     remaining gaggle of unsorted cells
+  // -----------------------------------------
   const minIndex: number = await a.reduce(
     async (
       minIndexPromise: Promise<number>,
       currentProtoCell: ProtoCell,
       currentIndex: number
     ): Promise<number> => {
-      // Ignore everything up to i
+      // ...ignore everything up to i
       if (currentIndex < i) {
         return i
       }
       const minIndex: number = await minIndexPromise
-      console.log('minIndex', minIndex)
-      // -----------------------------------------
-      // ... remove styling on the previously checked cell
-      // -----------------------------------------
+      // ...remove styling on the previously checked cell
       if (currentIndex !== i && currentIndex - 1 !== minIndex) {
         D.styleCellAsNothing(grid, currentIndex - 1, click, component)
       }
-      // -----------------------------------------
-      // [2] Style this one as being checked
-      // -----------------------------------------
+      // ...style this one as being checked
       if (currentIndex !== i) {
         D.styleCellAsChecking(grid, currentIndex, click, component)
         await D.wait(click)
       }
-      // -----------------------------------------
-      // Check this value against the current minValue
-      // and return the right one
-      // -----------------------------------------
+      // ...check this value against the current minValue
       if (currentIndex > minIndex && currentProtoCell.value < minValue) {
-        // -----------------------------------------
-        // ... remove styling on the previous min cell
-        // -----------------------------------------
+        // ...remove styling on the previous min cell
         if (minIndex !== i) {
           D.styleCellAsNothing(grid, minIndex, click, component)
         }
-        // -----------------------------------------
-        // [3] Style this one as min
-        // -----------------------------------------
+        // ...style this one as min
         if (currentIndex !== i) {
           D.styleCellAsMin(grid, currentIndex, click, component)
           await D.wait(click)
@@ -145,18 +137,21 @@ async function selectionSort(component: React.Component<Props, State>) {
     },
     Promise.resolve(i)
   )
+  // -----------------------------------------
+  // [3] Swap the cells
+  // -----------------------------------------
   const newA: ProtoCell[] = swapArrayElements(a, i, minIndex)
   D.animateCellSwap(grid, i, minIndex, click, component)
   // A temporary hack
   await D.wait(click)
-  // // If this one is already in the right
-  // // position do nothing
-  // if (i !== minIndex) {
   component.setState({
     grid: D.gridFactory(newA, size.width, size.height, cols, rows, click)()
   })
   component.state.a = newA
-  // }
+  // -----------------------------------------
+  // [4] Repeat the process starting from the
+  //     next cell
+  // -----------------------------------------
   ++component.state.i
   selectionSort(component)
 }
