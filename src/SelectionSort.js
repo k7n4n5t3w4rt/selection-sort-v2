@@ -1,6 +1,6 @@
 // @flow
 // NEXT STEPS:
-// [1] Grid uses the a[n].className property to set a CSS class on the cell
+// [1] Get onTransitionEnd in place for the animated swap
 
 // -------------------------------------------
 // Packages
@@ -87,7 +87,12 @@ async function selectionSort(component: React.Component<Props, State>) {
   if (i === a.length) {
     return true
   }
-  await D.wait(component.state.click)
+  console.log('i', i)
+  // -----------------------------------------
+  // [1] Next
+  // -----------------------------------------
+  D.styleCellAsNext(grid, i, click, component)
+  await D.wait(click)
   let minValue: number = a[i].value
   const minIndex: number = await a.reduce(
     async (
@@ -95,12 +100,49 @@ async function selectionSort(component: React.Component<Props, State>) {
       currentProtoCell: ProtoCell,
       currentIndex: number
     ): Promise<number> => {
+      // Ignore everything up to i
+      if (currentIndex < i) {
+        return i
+      }
       const minIndex: number = await minIndexPromise
-      // await D.wait(click)
+      console.log('minIndex', minIndex)
+      // -----------------------------------------
+      // ... remove styling on the previously checked cell
+      // -----------------------------------------
+      if (currentIndex !== i && currentIndex - 1 !== minIndex) {
+        D.styleCellAsNothing(grid, currentIndex - 1, click, component)
+      }
+      // -----------------------------------------
+      // [2] Style this one as being checked
+      // -----------------------------------------
+      if (currentIndex !== i) {
+        D.styleCellAsChecking(grid, currentIndex, click, component)
+        await D.wait(click)
+      }
+      // -----------------------------------------
+      // Check this value against the current minValue
+      // and return the right one
+      // -----------------------------------------
       if (currentIndex > minIndex && currentProtoCell.value < minValue) {
+        // -----------------------------------------
+        // ... remove styling on the previous min cell
+        // -----------------------------------------
+        if (minIndex !== i) {
+          D.styleCellAsNothing(grid, minIndex, click, component)
+        }
+        // -----------------------------------------
+        // [3] Style this one as min
+        // -----------------------------------------
+        if (currentIndex !== i) {
+          D.styleCellAsMin(grid, currentIndex, click, component)
+          await D.wait(click)
+        }
         minValue = currentProtoCell.value
         return currentIndex
       } else {
+        if (minIndex !== i) {
+          D.styleCellAsMin(grid, minIndex, click, component)
+        }
         return minIndex
       }
     },

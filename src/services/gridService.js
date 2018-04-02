@@ -49,6 +49,57 @@ function gridFactory(
   }
 }
 
+function styleCellAsNothing(
+  grid: Cell[][],
+  cellIndex: number,
+  click: number,
+  component: any
+): Promise<boolean> {
+  const coordinates = cellCoordinatesFromArrayIndex(cellIndex, grid)
+  const cell = grid[coordinates.colIndex][coordinates.rowIndex]
+  cell.className = ''
+  component.setState({ grid })
+  return Promise.resolve(true)
+}
+
+function styleCellAsNext(
+  grid: Cell[][],
+  cellIndex: number,
+  click: number,
+  component: any
+): Promise<boolean> {
+  const coordinates = cellCoordinatesFromArrayIndex(cellIndex, grid)
+  const cell = grid[coordinates.colIndex][coordinates.rowIndex]
+  cell.className = 'next-cell'
+  component.setState({ grid })
+  return Promise.resolve(true)
+}
+
+function styleCellAsChecking(
+  grid: Cell[][],
+  cellIndex: number,
+  click: number,
+  component: any
+): Promise<boolean> {
+  const coordinates = cellCoordinatesFromArrayIndex(cellIndex, grid)
+  const cell = grid[coordinates.colIndex][coordinates.rowIndex]
+  cell.className = 'checking-cell'
+  component.setState({ grid })
+  return Promise.resolve(true)
+}
+
+function styleCellAsMin(
+  grid: Cell[][],
+  cellIndex: number,
+  click: number,
+  component: any
+): Promise<boolean> {
+  const coordinates = cellCoordinatesFromArrayIndex(cellIndex, grid)
+  const cell = grid[coordinates.colIndex][coordinates.rowIndex]
+  cell.className = 'min-cell'
+  component.setState({ grid })
+  return Promise.resolve(true)
+}
 function animateCellSwap(
   grid: Cell[][],
   i: number,
@@ -67,14 +118,9 @@ function animateCellSwap(
     iCell.x = minCell.x
     iCell.y = minCell.y
     iCell.cssTransition = cssTransition(click)
-    iCell.className = 'index-cell'
     minCell.x = iCellCopy.x
     minCell.y = iCellCopy.y
     minCell.cssTransition = cssTransition(click)
-    minCell.className = 'min-cell'
-  } else {
-    // Just put a nice style on the index cell
-    iCell.className = 'index-cell'
   }
   component.setState({ grid })
   return Promise.resolve(true)
@@ -93,6 +139,10 @@ function wait(click: number): Promise<void> {
 
 export default {
   gridFactory,
+  styleCellAsNothing,
+  styleCellAsNext,
+  styleCellAsChecking,
+  styleCellAsMin,
   animateCellSwap,
   wait
 }
@@ -104,7 +154,6 @@ function cellCoordinatesFromArrayIndex(
   index: number,
   grid: Cell[][]
 ): { colIndex: number, rowIndex: number } {
-  console.log('index', index)
   const rows = grid.length
   const cols = grid[0].length
   const rowIndex = index % (rows - 1)
