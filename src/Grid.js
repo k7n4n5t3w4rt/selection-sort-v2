@@ -18,10 +18,11 @@ type CellStyle = {
   height: string,
   top: string,
   left: string,
-  transition: ?string
+  transition: string
 }
 type Props = {
   grid: Cell[][],
+  cellTransitionEnd: (e: SyntheticEvent<HTMLLIElement>) => mixed,
   click: number
 }
 // -------------------------------------------
@@ -39,7 +40,7 @@ type Props = {
 // RELOAD_INTERVAL: number,
 // CONSTANT_TRANSITION_SPEED: boolean,
 // FINISH_COUNTER: FinishCounter
-function Grid({ grid, click }: Props) {
+function Grid({ grid, cellTransitionEnd, click }: Props) {
   let idCount = 0
   return (
     <ul>
@@ -62,6 +63,7 @@ function Grid({ grid, click }: Props) {
               key={j}
               style={cellStyle}
               className={cellClassName}
+              onTransitionEnd={cellTransitionEnd}
             />
           )
         })

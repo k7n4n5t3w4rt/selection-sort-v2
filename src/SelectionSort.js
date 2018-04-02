@@ -7,6 +7,7 @@
 // -------------------------------------------
 import * as React from 'react'
 import sizeMe from 'react-sizeme'
+import Rx from 'rxjs'
 import qs from 'qs'
 // -------------------------------------------
 // App
@@ -69,11 +70,40 @@ class SelectionSort extends React.Component<Props, State> {
         click(props.click)
       )()
     }
+    const self: any = this
+    const rawEventStream = Rx.Observable.create(obs => {
+      self.transitionEndEvents = (
+        e: SyntheticEvent<HTMLLIElement>,
+        component: React.Component<Props, State>
+      ): void => {
+        // console.log(e.currentTarget.id)
+        obs.next(e.currentTarget.id)
+      }
+    })
+    rawEventStream
+      // $FlowFixMe
+      .pipe(Rx.operators.filter(id => id === '_' + self.state.i))
+      .subscribe(id => {
+        console.log(id)
+        selectionSort(self)
+      })
+    console.log(Rx)
   }
 
   render = () => {
+    const self: any = this
     const { click, grid } = this.state
-    return <Grid grid={grid} click={click} className="selection-sort" />
+    return (
+      <Grid
+        grid={grid}
+        click={click}
+        cellTransitionEnd={e => {
+          // console.log(e.currentTarget, this.state.i)
+          self.transitionEndEvents(e, this)
+        }}
+        className="selection-sort"
+      />
+    )
   }
 
   componentWillMount() {
@@ -149,16 +179,20 @@ async function selectionSort(component: React.Component<Props, State>) {
   component.setState({
     grid: D.gridFactory(newA, size.width, size.height, cols, rows, click)()
   })
-  component.state.a = newA
+  // Update the array and index in the state
+  component.setState({
+    a: newA,
+    i: ++component.state.i
+  })
   // -----------------------------------------
   // [4] Repeat the process starting from the
   //     next cell
   // -----------------------------------------
-  ++component.state.i
-  selectionSort(component)
+  // NOTE: selectionSort() is called onTransitionEnd when
+  // a cell finishes moving
+  // selectionSort(component)
 }
 
-// -------------------------------------------
 function swapArrayElements(
   a: ProtoCell[],
   i: number,
