@@ -81,13 +81,15 @@ class SelectionSort extends React.Component<Props, State> {
   }
 }
 
+// ====================================================
+// The Selection Sort algorithm
+// ====================================================
 async function selectionSort(component: React.Component<Props, State>) {
   const { i, a, click, size, cols, rows, grid } = component.state
   // Return out if we have ordered the whole array
   if (i === a.length) {
     return true
   }
-  console.log('i', i)
   // -----------------------------------------
   // [1] Next
   // -----------------------------------------
