@@ -140,9 +140,6 @@ async function selectionSort(component: React.Component<Props, State>) {
         minValue = currentProtoCell.value
         return currentIndex
       } else {
-        if (minIndex !== i) {
-          D.styleCellAsMin(grid, minIndex, click, component)
-        }
         return minIndex
       }
     },
