@@ -4,5 +4,16 @@
   width: 100%;
   height: 100%;
 }
-/* .normal-cell {
-} */
+.normal-cell {
+  z-index: inherit;
+}
+.index-cell {
+  outline: 3px solid orange;
+  outline-offset: -3px;
+  z-index: 10;
+}
+.min-cell {
+  outline: 3px solid green;
+  outline-offset: -3px;
+  z-index: 10;
+}

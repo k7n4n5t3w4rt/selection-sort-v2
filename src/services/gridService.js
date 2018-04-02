@@ -9,7 +9,7 @@ export type Cell = {
   x: number,
   y: number,
   className: string,
-  positionalCSS: string
+  cssTransition: string
 }
 export type ProtoCell = {
   value: number,
@@ -22,7 +22,8 @@ function gridFactory(
   containerWidth: number,
   containerHeight: number,
   cols: number,
-  rows: number
+  rows: number,
+  click: number
 ): () => Cell[][] {
   const cellWidth = containerWidth / parseInt(cols, 10)
   const cellHeight = containerHeight / parseInt(rows, 10)
@@ -40,7 +41,7 @@ function gridFactory(
           y: y,
           x: x,
           className: protoCell.className,
-          positionalCSS: positionalCSS(x, y)
+          cssTransition: ''
         }
       })
     })
@@ -48,8 +49,39 @@ function gridFactory(
   }
 }
 
-function positionalCSS(x, y) {
-  return `left: ${x}px; top: ${y}px`
+function animateCellSwap(
+  grid: Cell[][],
+  i: number,
+  minIndex: number,
+  click: number,
+  component: any
+): Promise<boolean> {
+  const iCoordinates = cellCoordinatesFromArrayIndex(i, grid)
+  const minCoordinates = cellCoordinatesFromArrayIndex(minIndex, grid)
+  const iCell = grid[iCoordinates.colIndex][iCoordinates.rowIndex]
+  const iCellCopy = Object.assign({}, iCell)
+  const minCell = grid[minCoordinates.colIndex][minCoordinates.rowIndex]
+  // Only do the swap if the index cell is not also
+  // the minimum cell
+  if (iCell.x !== minCell.x || iCell.y !== minCell.y) {
+    iCell.x = minCell.x
+    iCell.y = minCell.y
+    iCell.cssTransition = cssTransition(click)
+    iCell.className = 'index-cell'
+    minCell.x = iCellCopy.x
+    minCell.y = iCellCopy.y
+    minCell.cssTransition = cssTransition(click)
+    minCell.className = 'min-cell'
+  } else {
+    // Just put a nice style on the index cell
+    iCell.className = 'index-cell'
+  }
+  component.setState({ grid })
+  return Promise.resolve(true)
+}
+
+function cssTransition(click: number): string {
+  return `left ${click}ms ease-out, top ${click}ms ease-out`
 }
 
 // -------------------------------------------
@@ -61,12 +93,25 @@ function wait(click: number): Promise<void> {
 
 export default {
   gridFactory,
+  animateCellSwap,
   wait
 }
 
 // -------------------------------------------
 // 'private'
 // -------------------------------------------
+function cellCoordinatesFromArrayIndex(
+  index: number,
+  grid: Cell[][]
+): { colIndex: number, rowIndex: number } {
+  console.log('index', index)
+  const rows = grid.length
+  const cols = grid[0].length
+  const rowIndex = index % (rows - 1)
+  const colIndex = Math.floor(index / cols)
+  return { colIndex, rowIndex }
+}
+
 function matrix(a: ProtoCell[], cols: number): ProtoCell[][] {
   return a.reduce(
     (grid, currentProtoCell, currentIndex) => {

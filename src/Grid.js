@@ -18,10 +18,11 @@ type CellStyle = {
   height: string,
   top: string,
   left: string,
-  transition: string
+  transition: ?string
 }
 type Props = {
-  grid: Cell[][]
+  grid: Cell[][],
+  click: number
 }
 // -------------------------------------------
 // Component
@@ -38,7 +39,7 @@ type Props = {
 // RELOAD_INTERVAL: number,
 // CONSTANT_TRANSITION_SPEED: boolean,
 // FINISH_COUNTER: FinishCounter
-function Grid({ grid }: Props) {
+function Grid({ grid, click }: Props) {
   let idCount = 0
   return (
     <ul>
@@ -51,7 +52,7 @@ function Grid({ grid }: Props) {
             height: cell.height.toString() + 'px',
             top: cell.y ? cell.y.toString() + 'px' : 0 + 'px',
             left: cell.x ? cell.x.toString() + 'px' : 0 + 'px',
-            transition: 'left 1s ease-out, right 1s ease-out'
+            transition: cell.cssTransition
           }
           const cellClassName: string = cell.className
           ++idCount

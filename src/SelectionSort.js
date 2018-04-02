@@ -32,15 +32,17 @@ type Props = {
   rows: number
 }
 type State = {
+  i: number,
+  click: number,
+  a: ProtoCell[],
+  cols: number,
+  rows: number,
+  size: {
+    width: number,
+    height: number
+  },
   grid: Cell[][]
 }
-
-type SelectionSortWithMemberVariables = {
-  i: number,
-  a: ProtoCell[]
-} & Props &
-  State &
-  React.Component<Props, State>
 
 // ====================================================
 // Component
@@ -48,54 +50,53 @@ type SelectionSortWithMemberVariables = {
 class SelectionSort extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
-    const self: Object = this
-    self.i = 0
-    self.click = click(props.click)
-    self.cols = cols(props.cols)
-    self.rows = rows(props.rows)
     // Generate an array of random values between 0 and 1
-    self.a = arrayToSort(self.cols, self.rows)
+    const a = arrayToSort(cols(props.cols), rows(props.rows))
     // Put a grid matrix of columns and rows into the state
     this.state = {
+      i: 0,
+      click: click(props.click),
+      a: a,
+      cols: cols(props.cols),
+      rows: rows(props.rows),
+      size: props.size,
       grid: D.gridFactory(
-        self.a,
+        a,
         props.size.width,
         props.size.height,
-        self.cols,
-        self.rows
+        cols(props.cols),
+        rows(props.rows),
+        click(props.click)
       )()
     }
   }
 
   render = () => {
-    return <Grid grid={this.state.grid} className="selection-sort" />
+    const { click, grid } = this.state
+    return <Grid grid={grid} click={click} className="selection-sort" />
   }
 
   componentWillMount() {
-    // I have to make a copy of `this` and use it
-    // when assigning new member variables or flow
-    // chucks a spaz. I'll probably be refactoring
-    // this out when I add redux
-    const self: Object = this
-    selectionSort(self)
+    selectionSort(this)
   }
 }
 
-async function selectionSort(component: SelectionSortWithMemberVariables) {
+async function selectionSort(component: React.Component<Props, State>) {
+  const { i, a, click, size, cols, rows, grid } = component.state
   // Return out if we have ordered the whole array
-  if (component.i === component.a.length) {
+  if (i === a.length) {
     return true
   }
-  await D.wait(component.click)
-  let minValue: number = component.a[component.i].value
-  const minIndex: number = await component.a.reduce(
+  await D.wait(component.state.click)
+  let minValue: number = a[i].value
+  const minIndex: number = await a.reduce(
     async (
       minIndexPromise: Promise<number>,
       currentProtoCell: ProtoCell,
       currentIndex: number
     ): Promise<number> => {
       const minIndex: number = await minIndexPromise
-      // await D.wait(component.click)
+      // await D.wait(click)
       if (currentIndex > minIndex && currentProtoCell.value < minValue) {
         minValue = currentProtoCell.value
         return currentIndex
@@ -103,37 +104,22 @@ async function selectionSort(component: SelectionSortWithMemberVariables) {
         return minIndex
       }
     },
-    Promise.resolve(component.i)
+    Promise.resolve(i)
   )
-  // If this one is already in the right
-  // position do nothing
-  if (component.i !== minIndex) {
-    const newA: ProtoCell[] = swapArrayElements(
-      component.a,
-      component.i,
-      minIndex
-    )
-    updateDisplay(component, newA)
-    component.a = newA
-  }
-  ++component.i
-  selectionSort(component)
-}
-
-function updateDisplay(
-  component: SelectionSortWithMemberVariables,
-  newA: ProtoCell[]
-): mixed {
-  // body
+  const newA: ProtoCell[] = swapArrayElements(a, i, minIndex)
+  D.animateCellSwap(grid, i, minIndex, click, component)
+  // A temporary hack
+  await D.wait(click)
+  // // If this one is already in the right
+  // // position do nothing
+  // if (i !== minIndex) {
   component.setState({
-    grid: D.gridFactory(
-      newA,
-      component.props.size.width,
-      component.props.size.height,
-      component.cols,
-      component.rows
-    )()
+    grid: D.gridFactory(newA, size.width, size.height, cols, rows, click)()
   })
+  component.state.a = newA
+  // }
+  ++component.state.i
+  selectionSort(component)
 }
 
 // -------------------------------------------
@@ -168,7 +154,7 @@ function cols(propsCols: number | typeof undefined) {
   } else if (propsCols) {
     return propsCols
   } else {
-    return 1000
+    return 5
   }
 }
 
@@ -179,7 +165,7 @@ function rows(propsRows: number | typeof undefined) {
   } else if (propsRows) {
     return propsRows
   } else {
-    return 1000
+    return 5
   }
 }
 
