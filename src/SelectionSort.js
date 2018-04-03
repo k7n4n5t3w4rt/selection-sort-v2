@@ -2,27 +2,26 @@
 // NEXT STEPS:
 // [1] Get onTransitionEnd in place for the animated swap
 
-// -------------------------------------------
+// -------------------------------------
 // Packages
-// -------------------------------------------
+// -------------------------------------
 import * as React from 'react'
 import sizeMe from 'react-sizeme'
 import Rx from 'rxjs'
 import qs from 'qs'
-// -------------------------------------------
+// -------------------------------------
 // App
-// -------------------------------------------
+// -------------------------------------
 import Grid from './Grid.js'
 import D from './services/gridService.js'
-// -------------------------------------------
+// -------------------------------------
 // CSS
-// -------------------------------------------
+// -------------------------------------
 import './SelectionSort.css'
-// -------------------------------------------
+// -------------------------------------
 // Flow
-// -------------------------------------------
+// -------------------------------------
 import type { Cell } from './services/gridService.js'
-import type { ProtoCell } from './services/gridService.js'
 type Props = {
   size: {
     width: number,
@@ -35,7 +34,7 @@ type Props = {
 type State = {
   i: number,
   click: number,
-  a: ProtoCell[],
+  a: number[],
   cols: number,
   rows: number,
   size: {
@@ -45,9 +44,9 @@ type State = {
   grid: Cell[][]
 }
 
-// ====================================================
+// ====================================
 // Component
-// ====================================================
+// ====================================
 class SelectionSort extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
@@ -71,23 +70,25 @@ class SelectionSort extends React.Component<Props, State> {
       )()
     }
     const self: any = this
+    // The hander for all `transitionend` events from
+    // the animated cell swwap
     const rawEventStream = Rx.Observable.create(obs => {
       self.transitionEndEvents = (
         e: SyntheticEvent<HTMLLIElement>,
         component: React.Component<Props, State>
       ): void => {
-        // console.log(e.currentTarget.id)
         obs.next(e.currentTarget.id)
       }
     })
     rawEventStream
       // $FlowFixMe
       .pipe(Rx.operators.filter(id => id === '_' + self.state.i))
+      // $FlowFixMe
+      .pipe(Rx.operators.distinctUntilChanged())
       .subscribe(id => {
         console.log(id)
         selectionSort(self)
       })
-    console.log(Rx)
   }
 
   render = () => {
@@ -98,7 +99,6 @@ class SelectionSort extends React.Component<Props, State> {
         grid={grid}
         click={click}
         cellTransitionEnd={e => {
-          // console.log(e.currentTarget, this.state.i)
           self.transitionEndEvents(e, this)
         }}
         className="selection-sort"
@@ -111,29 +111,38 @@ class SelectionSort extends React.Component<Props, State> {
   }
 }
 
-// ====================================================
+// ====================================
 // The Selection Sort algorithm
-// ====================================================
+// ====================================
 async function selectionSort(component: React.Component<Props, State>) {
-  const { i, a, click, size, cols, rows, grid } = component.state
+  const { i, a, click, size, cols, rows } = component.state
+  let { grid } = component.state
+  // -----------------------------------
+  // [0] Housekeeping
+  // -----------------------------------
   // Return out if we have ordered the whole array
   if (i === a.length) {
     return true
   }
-  // -----------------------------------------
+  // Reset the grid based on the data array
+  grid = D.gridFactory(a, size.width, size.height, cols, rows, click)()
+  component.setState({
+    grid: grid
+  })
+  // -----------------------------------
   // [1] Next
-  // -----------------------------------------
+  // -----------------------------------
   D.styleCellAsNext(grid, i, click, component)
   await D.wait(click)
-  let minValue: number = a[i].value
-  // -----------------------------------------
+  let minValue: number = a[i]
+  // -----------------------------------
   // [2] Look ahead for the lightest cell in the
   //     remaining gaggle of unsorted cells
-  // -----------------------------------------
+  // -----------------------------------
   const minIndex: number = await a.reduce(
     async (
       minIndexPromise: Promise<number>,
-      currentProtoCell: ProtoCell,
+      currentValue: number,
       currentIndex: number
     ): Promise<number> => {
       // ...ignore everything up to i
@@ -141,17 +150,17 @@ async function selectionSort(component: React.Component<Props, State>) {
         return i
       }
       const minIndex: number = await minIndexPromise
-      // ...remove styling on the previously checked cell
-      if (currentIndex !== i && currentIndex - 1 !== minIndex) {
-        D.styleCellAsNothing(grid, currentIndex - 1, click, component)
-      }
+      // // ...remove styling on the previously checked cell
+      // if (currentIndex !== i && currentIndex - 1 !== minIndex) {
+      //   D.styleCellAsNothing(grid, currentIndex - 1, click, component)
+      // }
       // ...style this one as being checked
       if (currentIndex !== i) {
         D.styleCellAsChecking(grid, currentIndex, click, component)
         await D.wait(click)
       }
       // ...check this value against the current minValue
-      if (currentIndex > minIndex && currentProtoCell.value < minValue) {
+      if (currentIndex > minIndex && currentValue < minValue) {
         // ...remove styling on the previous min cell
         if (minIndex !== i) {
           D.styleCellAsNothing(grid, minIndex, click, component)
@@ -159,49 +168,60 @@ async function selectionSort(component: React.Component<Props, State>) {
         // ...style this one as min
         if (currentIndex !== i) {
           D.styleCellAsMin(grid, currentIndex, click, component)
-          await D.wait(click)
         }
-        minValue = currentProtoCell.value
+        minValue = currentValue
         return currentIndex
       } else {
+        if (currentIndex !== i) {
+          D.styleCellAsNothing(grid, currentIndex, click, component)
+        }
         return minIndex
       }
     },
     Promise.resolve(i)
   )
-  // -----------------------------------------
+  // -----------------------------------
   // [3] Swap the cells
-  // -----------------------------------------
-  const newA: ProtoCell[] = swapArrayElements(a, i, minIndex)
-  D.animateCellSwap(grid, i, minIndex, click, component)
-  // A temporary hack
-  await D.wait(click)
-  component.setState({
-    grid: D.gridFactory(newA, size.width, size.height, cols, rows, click)()
-  })
-  // Update the array and index in the state
-  component.setState({
-    a: newA,
-    i: ++component.state.i
-  })
-  // -----------------------------------------
+  // -----------------------------------
+  if (i !== minIndex) {
+    const newA: number[] = swapArrayElements(a, i, minIndex)
+    D.animateCellSwap(grid, i, minIndex, click, component)
+    // D.animateCellSwap did the
+    // animation but it didn't reset the
+    // actual values on which the grid
+    // is based - the array. We do that
+    // now BUT we don't re-render the grid -
+    // that happens in transitionEndEvents()
+    // after the swap animation
+    component.setState({
+      a: newA,
+      i: component.state.i + 1
+    })
+  } else {
+    D.styleCellAsNothing(grid, i, click, component)
+    component.setState({
+      i: component.state.i + 1
+    })
+    selectionSort(component)
+  }
+  // -----------------------------------
   // [4] Repeat the process starting from the
   //     next cell
-  // -----------------------------------------
-  // NOTE: selectionSort() is called onTransitionEnd when
-  // a cell finishes moving
-  // selectionSort(component)
+  // -----------------------------------
+  // NOTE: selectionSort() is called when transitionEndEvents,
+  // defined inside Rx.Observable.create() in the constructor,
+  // hears the transitionEnd event as a cell finishes moving
+  // OLD: selectionSort(component)
 }
 
-function swapArrayElements(
-  a: ProtoCell[],
-  i: number,
-  minIndex: number
-): ProtoCell[] {
-  const tmpValue: number = a[i].value
-  const newA: ProtoCell[] = [...a]
-  newA[i].value = newA[minIndex].value
-  newA[minIndex].value = tmpValue
+function swapArrayElements(a: number[], i: number, minIndex: number): number[] {
+  console.log('a', a)
+  const tmpValue: number = a[i]
+  const newA: number[] = a.slice()
+  newA[i] = newA[minIndex]
+  newA[minIndex] = tmpValue
+  console.log('a', a)
+  console.log('newA', newA)
   return newA
 }
 
@@ -239,13 +259,13 @@ function rows(propsRows: number | typeof undefined) {
   }
 }
 
-function arrayToSort(cols: number, rows: number): ProtoCell[] {
-  const a: ProtoCell[] = []
+function arrayToSort(cols: number, rows: number): number[] {
+  const a: number[] = []
   let randomNumber: number = 0
   const numItems: number = cols * rows
   for (let i = 0; i < numItems; i++) {
     randomNumber = Math.random()
-    a.push({ value: randomNumber, className: 'normal-cell' })
+    a.push(randomNumber)
   }
   return a
 }

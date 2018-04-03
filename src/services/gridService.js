@@ -1,5 +1,5 @@
 // @flow
-// -------------------------------------------
+// -------------------------------------
 // Flow
 export type Cell = {
   value: number,
@@ -11,14 +11,10 @@ export type Cell = {
   className: string,
   cssTransition: string
 }
-export type ProtoCell = {
-  value: number,
-  className: string
-}
 
-// -------------------------------------------
+// -------------------------------------
 function gridFactory(
-  a: ProtoCell[],
+  a: number[],
   containerWidth: number,
   containerHeight: number,
   cols: number,
@@ -31,16 +27,16 @@ function gridFactory(
   return (): Cell[][] => {
     const displayGrid = grid.map((row, currentIndex) => {
       const y = currentIndex * cellHeight
-      return row.map((protoCell, currentIndex) => {
+      return row.map((value, currentIndex) => {
         const x = currentIndex * cellWidth
         return {
-          value: protoCell.value,
+          value: value,
           id: '_' + currentIndex,
           width: cellWidth,
           height: cellHeight,
           y: y,
           x: x,
-          className: protoCell.className,
+          className: '',
           cssTransition: ''
         }
       })
@@ -100,6 +96,7 @@ function styleCellAsMin(
   component.setState({ grid })
   return Promise.resolve(true)
 }
+
 function animateCellSwap(
   grid: Cell[][],
   i: number,
@@ -122,6 +119,14 @@ function animateCellSwap(
     minCell.y = iCellCopy.y
     minCell.cssTransition = cssTransition(click)
   }
+  // Just a note for when I forget.
+  // Changing the state here just sets
+  // the values on grid cells in such a
+  // way as to start the CSS transition.
+  // The actual data aray is not changed
+  // so next time the grid is rebuilt, it
+  // will take the values from the actual
+  // data array
   component.setState({ grid })
   return Promise.resolve(true)
 }
@@ -130,7 +135,7 @@ function cssTransition(click: number): string {
   return `left ${click}ms ease-out, top ${click}ms ease-out`
 }
 
-// -------------------------------------------
+// -------------------------------------
 function wait(click: number): Promise<void> {
   return new Promise(resolve => {
     window.setTimeoutZero(resolve, click)
@@ -147,9 +152,9 @@ export default {
   wait
 }
 
-// -------------------------------------------
+// -------------------------------------
 // 'private'
-// -------------------------------------------
+// -------------------------------------
 function cellCoordinatesFromArrayIndex(
   index: number,
   grid: Cell[][]
@@ -161,11 +166,11 @@ function cellCoordinatesFromArrayIndex(
   return { colIndex, rowIndex }
 }
 
-function matrix(a: ProtoCell[], cols: number): ProtoCell[][] {
+function matrix(a: number[], cols: number): number[][] {
   return a.reduce(
-    (grid, currentProtoCell, currentIndex) => {
+    (grid, currentValue, currentIndex) => {
       const lastIndex = grid.length - 1
-      grid[lastIndex].push(currentProtoCell)
+      grid[lastIndex].push(currentValue)
       if (!((currentIndex + 1) % cols)) {
         grid.push([])
       }
@@ -175,9 +180,9 @@ function matrix(a: ProtoCell[], cols: number): ProtoCell[][] {
   )
 }
 
-// --------------------------------------------------
+// --------------------------------------------
 // FROM: https://dbaron.org/log/20100309-faster-timeouts
-// --------------------------------------------------
+// --------------------------------------------
 // Only add setZeroTimeout to the window object, and hide everything
 // else in a closure.
 ;(function() {

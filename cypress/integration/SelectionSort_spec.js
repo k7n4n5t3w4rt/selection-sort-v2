@@ -3,29 +3,29 @@ describe('SelectionSort', function() {
   const rows = 10
   const cols = 10
   const numberOfWaits = 1
-  // ====================================================
+  // ====================================
   context('Page', function() {
     beforeEach(function() {
       cy.visit(`http://localhost:3000?click=${click}&cols=${cols}&rows=${rows}`)
     })
-    // ----------------------------------------------------
+    // ----------------------------------------------
     it('The <title> is correct', function() {
       cy.title().should('include', 'SelectionSort')
     })
   })
 
-  // ====================================================
+  // ====================================
   context('The Grid', function() {
     beforeEach(function() {
       cy.visit(`http://localhost:3000?click=${click}&cols=${cols}&rows=${rows}`)
     })
 
-    // ----------------------------------------------------
+    // ----------------------------------------------
     it('There are the right number of cells', function() {
       cy.get('#root ul li').should('have.length', rows * cols)
     })
 
-    // ----------------------------------------------------
+    // ----------------------------------------------
     it('The cells are in order...', function() {
       const bgCs = {}
       const someExtraTime = 1000
