@@ -1,6 +1,6 @@
 // @flow
 // NEXT STEPS:
-// [1] Get onTransitionEnd in place for the animated swap
+// [1] Redux
 
 // -------------------------------------
 // Packages
@@ -70,8 +70,12 @@ class SelectionSort extends React.Component<Props, State> {
       )()
     }
     const self: any = this
-    // The hander for all `transitionend` events from
-    // the animated cell swwap
+    // -----------------------------------
+    // [4] Repeat the process starting from the
+    //     next cell
+    // -----------------------------------
+    // The hander for all `transitionend` events
+    // from the animated cell swwap
     const rawEventStream = Rx.Observable.create(obs => {
       self.transitionEndEvents = (
         e: SyntheticEvent<HTMLLIElement>,
@@ -81,12 +85,11 @@ class SelectionSort extends React.Component<Props, State> {
       }
     })
     rawEventStream
-      // $FlowFixMe
+      // $FlowFixMe - Rx.operators
       .pipe(Rx.operators.filter(id => id === '_' + self.state.i))
-      // $FlowFixMe
+      // $FlowFixMe - Rx.operators
       .pipe(Rx.operators.distinctUntilChanged())
       .subscribe(id => {
-        console.log(id)
         selectionSort(self)
       })
   }
@@ -214,18 +217,19 @@ async function selectionSort(component: React.Component<Props, State>) {
   // OLD: selectionSort(component)
 }
 
-function swapArrayElements(a: number[], i: number, minIndex: number): number[] {
-  console.log('a', a)
+export function swapArrayElements(
+  a: number[],
+  i: number,
+  minIndex: number
+): number[] {
   const tmpValue: number = a[i]
   const newA: number[] = a.slice()
   newA[i] = newA[minIndex]
   newA[minIndex] = tmpValue
-  console.log('a', a)
-  console.log('newA', newA)
   return newA
 }
 
-function click(propsClick: number | typeof undefined) {
+export function click(propsClick: number | typeof undefined) {
   const urlProps: Object = qs.parse(window.location.search.substring(1))
   // Set the `click` property  used for the basic selectionSort frequency
   if (urlProps.click) {
@@ -237,7 +241,7 @@ function click(propsClick: number | typeof undefined) {
   }
 }
 
-function cols(propsCols: number | typeof undefined) {
+export function cols(propsCols: number | typeof undefined) {
   const urlProps: Object = qs.parse(window.location.search.substring(1))
   if (urlProps.cols) {
     return urlProps.cols
@@ -248,7 +252,7 @@ function cols(propsCols: number | typeof undefined) {
   }
 }
 
-function rows(propsRows: number | typeof undefined) {
+export function rows(propsRows: number | typeof undefined) {
   const urlProps: Object = qs.parse(window.location.search.substring(1))
   if (urlProps.rows) {
     return urlProps.rows
@@ -259,7 +263,7 @@ function rows(propsRows: number | typeof undefined) {
   }
 }
 
-function arrayToSort(cols: number, rows: number): number[] {
+export function arrayToSort(cols: number, rows: number): number[] {
   const a: number[] = []
   let randomNumber: number = 0
   const numItems: number = cols * rows

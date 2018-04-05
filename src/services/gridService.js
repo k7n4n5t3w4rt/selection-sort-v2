@@ -27,11 +27,11 @@ function gridFactory(
   return (): Cell[][] => {
     const displayGrid = grid.map((row, currentIndex) => {
       const y = currentIndex * cellHeight
-      return row.map((value, currentIndex) => {
-        const x = currentIndex * cellWidth
+      return row.map((value, rowIndex) => {
+        const x = rowIndex * cellWidth
         return {
           value: value,
-          id: '_' + currentIndex,
+          id: `_${currentIndex}:${rowIndex}`,
           width: cellWidth,
           height: cellHeight,
           y: y,
@@ -50,12 +50,11 @@ function styleCellAsNothing(
   cellIndex: number,
   click: number,
   component: any
-): Promise<boolean> {
+): void {
   const coordinates = cellCoordinatesFromArrayIndex(cellIndex, grid)
   const cell = grid[coordinates.colIndex][coordinates.rowIndex]
   cell.className = ''
   component.setState({ grid })
-  return Promise.resolve(true)
 }
 
 function styleCellAsNext(
@@ -63,12 +62,11 @@ function styleCellAsNext(
   cellIndex: number,
   click: number,
   component: any
-): Promise<boolean> {
+): void {
   const coordinates = cellCoordinatesFromArrayIndex(cellIndex, grid)
   const cell = grid[coordinates.colIndex][coordinates.rowIndex]
   cell.className = 'next-cell'
   component.setState({ grid })
-  return Promise.resolve(true)
 }
 
 function styleCellAsChecking(
@@ -76,12 +74,11 @@ function styleCellAsChecking(
   cellIndex: number,
   click: number,
   component: any
-): Promise<boolean> {
+): void {
   const coordinates = cellCoordinatesFromArrayIndex(cellIndex, grid)
   const cell = grid[coordinates.colIndex][coordinates.rowIndex]
   cell.className = 'checking-cell'
   component.setState({ grid })
-  return Promise.resolve(true)
 }
 
 function styleCellAsMin(
@@ -89,12 +86,11 @@ function styleCellAsMin(
   cellIndex: number,
   click: number,
   component: any
-): Promise<boolean> {
+): void {
   const coordinates = cellCoordinatesFromArrayIndex(cellIndex, grid)
   const cell = grid[coordinates.colIndex][coordinates.rowIndex]
   cell.className = 'min-cell'
   component.setState({ grid })
-  return Promise.resolve(true)
 }
 
 function animateCellSwap(
@@ -103,21 +99,22 @@ function animateCellSwap(
   minIndex: number,
   click: number,
   component: any
-): Promise<boolean> {
+): void {
   const iCoordinates = cellCoordinatesFromArrayIndex(i, grid)
   const minCoordinates = cellCoordinatesFromArrayIndex(minIndex, grid)
   const iCell = grid[iCoordinates.colIndex][iCoordinates.rowIndex]
   const iCellCopy = Object.assign({}, iCell)
   const minCell = grid[minCoordinates.colIndex][minCoordinates.rowIndex]
+  const cssTransition = `left ${click}ms ease-out, top ${click}ms ease-out`
   // Only do the swap if the index cell is not also
   // the minimum cell
   if (iCell.x !== minCell.x || iCell.y !== minCell.y) {
     iCell.x = minCell.x
     iCell.y = minCell.y
-    iCell.cssTransition = cssTransition(click)
+    iCell.cssTransition = cssTransition
     minCell.x = iCellCopy.x
     minCell.y = iCellCopy.y
-    minCell.cssTransition = cssTransition(click)
+    minCell.cssTransition = cssTransition
   }
   // Just a note for when I forget.
   // Changing the state here just sets
@@ -128,11 +125,6 @@ function animateCellSwap(
   // will take the values from the actual
   // data array
   component.setState({ grid })
-  return Promise.resolve(true)
-}
-
-function cssTransition(click: number): string {
-  return `left ${click}ms ease-out, top ${click}ms ease-out`
 }
 
 // -------------------------------------
@@ -155,7 +147,7 @@ export default {
 // -------------------------------------
 // 'private'
 // -------------------------------------
-function cellCoordinatesFromArrayIndex(
+export function cellCoordinatesFromArrayIndex(
   index: number,
   grid: Cell[][]
 ): { colIndex: number, rowIndex: number } {
@@ -166,7 +158,7 @@ function cellCoordinatesFromArrayIndex(
   return { colIndex, rowIndex }
 }
 
-function matrix(a: number[], cols: number): number[][] {
+export function matrix(a: number[], cols: number): number[][] {
   return a.reduce(
     (grid, currentValue, currentIndex) => {
       const lastIndex = grid.length - 1

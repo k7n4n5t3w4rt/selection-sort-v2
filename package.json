@@ -2,7 +2,6 @@
   "name": "selection-sort",
   "version": "0.1.0",
   "dependencies": {
-    "lodash": "^4.17.5",
     "qs": "^6.5.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
@@ -17,7 +16,8 @@
     "fixpack": "^2.3.1",
     "flow-bin": "^0.66.0",
     "gh-pages": "^1.1.0",
-    "prettier": "^1.11.0"
+    "prettier": "^1.11.0",
+    "redux-devtools": "^3.4.1"
   },
   "homepage": "https://k7n4n5t3w4rt.github.io/selection-sort-v2/",
   "private": true,
@@ -33,6 +33,7 @@
     "predeploy": "npm run build",
     "prettier": "prettier --write \"src/**/*.js\"",
     "start": "react-scripts start",
-    "test": "npm run cypress:run && react-scripts test --env=jsdom"
+    "test:unit": "react-scripts test --env=jsdom",
+    "test": "npm run cypress:run && npm run test:unit"
   }
 }

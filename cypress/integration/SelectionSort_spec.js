@@ -1,7 +1,7 @@
 describe('SelectionSort', function() {
-  const click = 50
-  const rows = 10
-  const cols = 10
+  const click = 1
+  const rows = 5
+  const cols = 5
   const numberOfWaits = 1
   // ====================================
   context('Page', function() {
@@ -28,11 +28,8 @@ describe('SelectionSort', function() {
     // ----------------------------------------------
     it('The cells are in order...', function() {
       const bgCs = {}
-      const someExtraTime = 1000
-      let waitTime = click * numberOfWaits * (cols * rows) + someExtraTime
-      if (click === 0) {
-        waitTime = 10 * (cols * rows)
-      }
+      const someExtraTime = 7000
+      const waitTime = click * numberOfWaits * (cols * rows) + someExtraTime
       cy
         .wait(waitTime)
         .get('#root ul li')
