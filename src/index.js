@@ -1,11 +1,17 @@
-import React from 'react'
+// @flow
+// Import React "as a namespace":
+//   ~ https://flow.org/en/docs/react/types/
+import * as React from 'react'
 import ReactDOM from 'react-dom'
-import './reset.css'
-import './index.css'
-import SelectionSort from './SelectionSort.js'
+
+import App from './App'
+
 import registerServiceWorker from './registerServiceWorker'
-ReactDOM.render(
-  <SelectionSort cols="3" rows="3" click="500" />,
-  document.getElementById('root')
-)
-registerServiceWorker()
+
+const root = document.getElementById('root')
+
+if (root) {
+  ReactDOM.render(<App />, root)
+
+  registerServiceWorker()
+}
