@@ -25,11 +25,11 @@ import './SelectionSort.css'
 import type { GlobalState } from './redux/reducer.js'
 import type { Cell } from './services/gridService.js'
 type Props = {
-  i: number,
   click: number,
-  a: number[],
   cols: number,
   rows: number,
+  i: number,
+  a: number[],
   size: {
     width: number,
     height: number
@@ -78,8 +78,8 @@ function SelectionSort({ click, grid }: Props) {
 
 const mapStateToProps = (state: GlobalState) => {
   return {
-    click: state.click,
-    grid: state.grid
+    click: state.ui.click,
+    grid: state.ui.grid
   }
 }
 

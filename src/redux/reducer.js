@@ -5,39 +5,52 @@ import D from '../services/gridService.js'
 import type { Cell } from '../services/gridService.js'
 import type { Actions } from './actions.js'
 export type GlobalState = {
-  i: number,
-  click: number,
-  a: number[],
-  cols: number,
-  rows: number,
-  size: {
-    width: number,
-    height: number
+  ui: {
+    click: number,
+    cols: number,
+    rows: number,
+    size: {
+      width: number,
+      height: number
+    },
+    grid: Cell[][]
   },
-  grid: Cell[][]
+  data: {
+    i: number,
+    a: number[]
+  }
 }
-
-const initialClick = click()
-const initialCols = cols()
-const initialRows = rows()
+// If there's a click=SOMETHING in the url use that,
+// otherwise use a default
+const initialClick = qs.parse(window.location.search.substring(1)).click || 1000
+// If there's a cols=SOMETHING in the url use that,
+// otherwise use a default
+const initialCols = qs.parse(window.location.search.substring(1)).cols || 5
+// If there's a rows=SOMETHING in the url use that,
+// otherwise use a default
+const initialRows = qs.parse(window.location.search.substring(1)).rows || 5
 const a = arrayToSort(initialCols, initialRows)
 const initialSize = { width: window.innerWidth, height: window.innerHeight }
 
 const initialState: GlobalState = {
-  i: 0,
-  click: initialClick,
-  a: a,
-  cols: cols(),
-  rows: rows(),
-  size: initialSize,
-  grid: D.gridFactory(
-    a,
-    initialSize.width,
-    initialSize.height,
-    initialCols,
-    initialRows,
-    initialClick
-  )()
+  ui: {
+    click: initialClick,
+    cols: initialCols,
+    rows: initialRows,
+    size: initialSize,
+    grid: D.gridFactory(
+      a,
+      initialSize.width,
+      initialSize.height,
+      initialCols,
+      initialRows,
+      initialClick
+    )()
+  },
+  data: {
+    i: 0,
+    a: a
+  }
 }
 
 export default function reducer(
@@ -53,34 +66,6 @@ export default function reducer(
       return state
     default:
       return state
-  }
-}
-
-export function click() {
-  const urlProps: Object = qs.parse(window.location.search.substring(1))
-  // Set the `click` property  used for the basic selectionSort frequency
-  if (urlProps.click) {
-    return urlProps.click
-  } else {
-    return 1000
-  }
-}
-
-export function cols() {
-  const urlProps: Object = qs.parse(window.location.search.substring(1))
-  if (urlProps.cols) {
-    return urlProps.cols
-  } else {
-    return 5
-  }
-}
-
-export function rows() {
-  const urlProps: Object = qs.parse(window.location.search.substring(1))
-  if (urlProps.rows) {
-    return urlProps.rows
-  } else {
-    return 5
   }
 }
 
