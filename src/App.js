@@ -14,21 +14,21 @@ import reducer from './redux/reducer.js'
 import type { GlobalState } from './redux/reducer.js'
 // If there's a click=SOMETHING in the url use that,
 // otherwise use a default
-const initialClick = qs.parse(window.location.search.substring(1)).click || 1000
+const click = qs.parse(window.location.search.substring(1)).click || 1000
 // If there's a cols=SOMETHING in the url use that,
 // otherwise use a default
-const initialCols = qs.parse(window.location.search.substring(1)).cols || 5
+const cols = qs.parse(window.location.search.substring(1)).cols || 5
 // If there's a rows=SOMETHING in the url use that,
 // otherwise use a default
-const initialRows = qs.parse(window.location.search.substring(1)).rows || 5
+const rows = qs.parse(window.location.search.substring(1)).rows || 5
 
-const a = arrayToSort(initialCols, initialRows)
+const a = arrayToSort(cols, rows)
 
 const initialState: GlobalState = {
   ui: {
-    click: initialClick,
-    cols: initialCols,
-    rows: initialRows,
+    click,
+    cols,
+    rows,
     size: null,
     grid: null
   },
@@ -43,7 +43,7 @@ const store = createStore(reducer, initialState)
 function App() {
   return (
     <Provider store={store}>
-      <SelectionSort cols="3" rows="3" click="500" />
+      <SelectionSort />
     </Provider>
   )
 }

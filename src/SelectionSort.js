@@ -1,6 +1,6 @@
 // @flow
 // NEXT STEPS:
-// [1] Redux
+// [1] Get the URL  cols and rows coming in
 
 // -------------------------------------
 // Packages
@@ -13,7 +13,7 @@ import sizeMe from 'react-sizeme'
 // App
 // -------------------------------------
 import Grid from './Grid.js'
-// import D from './services/gridService.js'
+import D from './services/gridService.js'
 
 // -------------------------------------
 // CSS
@@ -25,36 +25,24 @@ import './SelectionSort.css'
 import type { GlobalState } from './redux/reducer.js'
 import type { Cell } from './services/gridService.js'
 type Props = {
+  // These are coming from the store
   uiRows: number,
   uiCols: number,
   uiClick: number,
   uiGrid: Cell[][],
   i: number,
   a: number[],
-  click: number,
-  cols: number,
-  rows: number,
+  // Coming from sizeMe
   size: {
     width: number,
     height: number
-  },
-  grid: Cell[][]
+  }
 }
 
 // ====================================
 // Component
 // ====================================
-function SelectionSort({
-  uiRows,
-  uiCols,
-  uiClick,
-  uiGrid,
-  i,
-  a,
-  rows,
-  cols,
-  click
-}: Props) {
+class SelectionSort extends React.Component<Props> {
   // // -----------------------------------
   // // [4] Repeat the process starting from the
   // //     next cell
@@ -78,16 +66,23 @@ function SelectionSort({
   //     selectionSort(self)
   //   })
 
-  return (
-    <Grid
-      grid={uiGrid}
-      click={uiClick}
-      cellTransitionEnd={e => {
-        // self.transitionEndEvents(e, this)
-      }}
-      className="selection-sort"
-    />
-  )
+  render() {
+    const { uiRows, uiCols, uiClick, uiGrid, i, a, size } = this.props
+    const grid =
+      uiGrid ||
+      D.gridFactory(a, size.width, size.height, uiCols, uiRows, uiClick)()
+
+    return (
+      <Grid
+        grid={grid}
+        click={uiClick}
+        cellTransitionEnd={e => {
+          // self.transitionEndEvents(e, this)
+        }}
+        className="selection-sort"
+      />
+    )
+  }
 }
 
 const mapStateToProps = (state: GlobalState) => {

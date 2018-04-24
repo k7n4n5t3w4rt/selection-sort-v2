@@ -18,7 +18,13 @@ export type GlobalState = {
     a: number[]
   }
 }
-export default function reducer(state: GlobalState, action: Actions) {
+export default function reducer(
+  state: GlobalState | typeof undefined,
+  action: Actions
+) {
+  if (typeof state === 'undefined') {
+    return state
+  }
   switch (action.type) {
     case 'START':
       return state
