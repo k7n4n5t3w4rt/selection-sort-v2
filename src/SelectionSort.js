@@ -25,11 +25,15 @@ import './SelectionSort.css'
 import type { GlobalState } from './redux/reducer.js'
 import type { Cell } from './services/gridService.js'
 type Props = {
+  uiRows: number,
+  uiCols: number,
+  uiClick: number,
+  uiGrid: Cell[][],
+  i: number,
+  a: number[],
   click: number,
   cols: number,
   rows: number,
-  i: number,
-  a: number[],
   size: {
     width: number,
     height: number
@@ -40,7 +44,17 @@ type Props = {
 // ====================================
 // Component
 // ====================================
-function SelectionSort({ click, grid }: Props) {
+function SelectionSort({
+  uiRows,
+  uiCols,
+  uiClick,
+  uiGrid,
+  i,
+  a,
+  rows,
+  cols,
+  click
+}: Props) {
   // // -----------------------------------
   // // [4] Repeat the process starting from the
   // //     next cell
@@ -66,8 +80,8 @@ function SelectionSort({ click, grid }: Props) {
 
   return (
     <Grid
-      grid={grid}
-      click={click}
+      grid={uiGrid}
+      click={uiClick}
       cellTransitionEnd={e => {
         // self.transitionEndEvents(e, this)
       }}
@@ -78,15 +92,20 @@ function SelectionSort({ click, grid }: Props) {
 
 const mapStateToProps = (state: GlobalState) => {
   return {
-    click: state.ui.click,
-    grid: state.ui.grid
+    uiRows: state.ui.rows,
+    uiCols: state.ui.cols,
+    uiClick: state.ui.click,
+    uiGrid: state.ui.grid,
+    i: state.data.i,
+    a: state.data.a
   }
 }
 
 const mapDispatchToProps = (state: GlobalState) => {
   return {
     // onTodoClick: id => {
-    // dispatch(toggleTodo(id))
+    //   dispatch(toggleTodo(id))
+    // }
   }
 }
 
