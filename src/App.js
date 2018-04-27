@@ -21,7 +21,7 @@ const cols = qs.parse(window.location.search.substring(1)).cols || 5
 // If there's a rows=SOMETHING in the url use that,
 // otherwise use a default
 const rows = qs.parse(window.location.search.substring(1)).rows || 5
-
+// Generate the array of random values between 0 and 1
 const a = arrayToSort(cols, rows)
 
 const initialState: GlobalState = {
@@ -33,7 +33,7 @@ const initialState: GlobalState = {
     grid: null
   },
   data: {
-    i: 0,
+    i: 0, // The starting index
     a: a
   }
 }

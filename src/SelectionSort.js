@@ -1,6 +1,9 @@
 // @flow
 // NEXT STEPS:
-// [1] Get the URL  cols and rows coming in
+// [1] Make SelectionSort inherit from React.Component
+// [2] Use a life cycle hook to start the algorithm after the grid has rendered
+// [3] When two items are swapped, update "a" in the store with an action and a reducer
+// [4] Re-implement the unit tests - the Cypress tests should be fine
 
 // -------------------------------------
 // Packages
@@ -14,6 +17,7 @@ import sizeMe from 'react-sizeme'
 // -------------------------------------
 import Grid from './Grid.js'
 import D from './services/gridService.js'
+import sort from './services/selectionSort.js'
 
 // -------------------------------------
 // CSS
@@ -30,7 +34,6 @@ type Props = {
   uiCols: number,
   uiClick: number,
   uiGrid: Cell[][],
-  i: number,
   a: number[],
   // Coming from sizeMe
   size: {
@@ -42,36 +45,34 @@ type Props = {
 // ====================================
 // Component
 // ====================================
-class SelectionSort extends React.Component<Props> {
-  // // -----------------------------------
-  // // [4] Repeat the process starting from the
-  // //     next cell
-  // // -----------------------------------
-  // // The hander for all `transitionend` events
-  // // from the animated cell swwap
-  // const rawEventStream = Rx.Observable.create(obs => {
-  //   self.transitionEndEvents = (
-  //     e: SyntheticEvent<HTMLLIElement>,
-  //     component: React.Component<Props, State>
-  //   ): void => {
-  //     obs.next(e.currentTarget.id)
-  //   }
-  // })
-  // rawEventStream
-  //   // $FlowFixMe - Rx.operators
-  //   .pipe(Rx.operators.filter(id => id === '_' + self.state.i))
-  //   // $FlowFixMe - Rx.operators
-  //   .pipe(Rx.operators.distinctUntilChanged())
-  //   .subscribe(id => {
-  //     selectionSort(self)
-  //   })
-
-  render() {
-    const { uiRows, uiCols, uiClick, uiGrid, i, a, size } = this.props
+function SelectionSort(props: Props, context: any) {
+  const instance = Object.create(React.Component.prototype)
+  instance.props = props
+  instance.context = context
+  // ---
+  // "The reason why Flow rejects this code is because we take
+  // class methods to be readonly.At runtime, they are read / write,
+  // but the readonly assumption is extremely convenient in that it
+  // allows subclasses to override methods covariantly, which is an
+  // even more common pattern than rebinding."
+  // https://github.com/facebook/flow/issues/1397
+  // $FlowFixMe
+  instance.componentDidMount = () => {
+    sort(context.store)
+  }
+  // ---
+  // "The reason why Flow rejects this code is because we take
+  // class methods to be readonly.At runtime, they are read / write,
+  // but the readonly assumption is extremely convenient in that it
+  // allows subclasses to override methods covariantly, which is an
+  // even more common pattern than rebinding."
+  // https://github.com/facebook/flow/issues/1397
+  // $FlowFixMe
+  instance.render = () => {
+    const { uiRows, uiCols, uiClick, uiGrid, a, size } = props
     const grid =
       uiGrid ||
       D.gridFactory(a, size.width, size.height, uiCols, uiRows, uiClick)()
-
     return (
       <Grid
         grid={grid}
@@ -83,7 +84,33 @@ class SelectionSort extends React.Component<Props> {
       />
     )
   }
+  // ---
+
+  return instance
 }
+
+// // -----------------------------------
+// // [4] Repeat the process starting from the
+// //     next cell
+// // -----------------------------------
+// // The hander for all `transitionend` events
+// // from the animated cell swap
+// const rawEventStream = Rx.Observable.create(obs => {
+//   self.transitionEndEvents = (
+//     e: SyntheticEvent<HTMLLIElement>,
+//     component: React.Component<Props, State>
+//   ): void => {
+//     obs.next(e.currentTarget.id)
+//   }
+// })
+// rawEventStream
+//   // $FlowFixMe - Rx.operators
+//   .pipe(Rx.operators.filter(id => id === '_' + self.state.i))
+//   // $FlowFixMe - Rx.operators
+//   .pipe(Rx.operators.distinctUntilChanged())
+//   .subscribe(id => {
+//     selectionSort(self)
+//   })
 
 const mapStateToProps = (state: GlobalState) => {
   return {
@@ -91,7 +118,6 @@ const mapStateToProps = (state: GlobalState) => {
     uiCols: state.ui.cols,
     uiClick: state.ui.click,
     uiGrid: state.ui.grid,
-    i: state.data.i,
     a: state.data.a
   }
 }
@@ -107,118 +133,3 @@ const mapDispatchToProps = (state: GlobalState) => {
 export default connect(mapStateToProps, mapDispatchToProps)(
   sizeMe({ monitorHeight: true })(SelectionSort)
 )
-
-// // ====================================
-// // The Selection Sort algorithm
-// // ====================================
-// async function selectionSort(component: React.Component<Props, State>) {
-//   const { i, a, click, size, cols, rows } = component.state
-//   let { grid } = component.state
-//   // -----------------------------------
-//   // [0] Housekeeping
-//   // -----------------------------------
-//   // Return out if we have ordered the whole array
-//   if (i === a.length) {
-//     return true
-//   }
-//   // Reset the grid based on the data array
-//   grid = D.gridFactory(a, size.width, size.height, cols, rows, click)()
-//   component.setState({
-//     grid: grid
-//   })
-//   // -----------------------------------
-//   // [1] Next
-//   // -----------------------------------
-//   D.styleCellAsNext(grid, i, click, component)
-//   await D.wait(click)
-//   let minValue: number = a[i]
-//   // -----------------------------------
-//   // [2] Look ahead for the lightest cell in the
-//   //     remaining gaggle of unsorted cells
-//   // -----------------------------------
-//   const minIndex: number = await a.reduce(
-//     async (
-//       minIndexPromise: Promise<number>,
-//       currentValue: number,
-//       currentIndex: number
-//     ): Promise<number> => {
-//       // ...ignore everything up to i
-//       if (currentIndex < i) {
-//         return i
-//       }
-//       const minIndex: number = await minIndexPromise
-//       // // ...remove styling on the previously checked cell
-//       // if (currentIndex !== i && currentIndex - 1 !== minIndex) {
-//       //   D.styleCellAsNothing(grid, currentIndex - 1, click, component)
-//       // }
-//       // ...style this one as being checked
-//       if (currentIndex !== i) {
-//         D.styleCellAsChecking(grid, currentIndex, click, component)
-//         await D.wait(click)
-//       }
-//       // ...check this value against the current minValue
-//       if (currentIndex > minIndex && currentValue < minValue) {
-//         // ...remove styling on the previous min cell
-//         if (minIndex !== i) {
-//           D.styleCellAsNothing(grid, minIndex, click, component)
-//         }
-//         // ...style this one as min
-//         if (currentIndex !== i) {
-//           D.styleCellAsMin(grid, currentIndex, click, component)
-//         }
-//         minValue = currentValue
-//         return currentIndex
-//       } else {
-//         if (currentIndex !== i) {
-//           D.styleCellAsNothing(grid, currentIndex, click, component)
-//         }
-//         return minIndex
-//       }
-//     },
-//     Promise.resolve(i)
-//   )
-//   // -----------------------------------
-//   // [3] Swap the cells
-//   // -----------------------------------
-//   if (i !== minIndex) {
-//     const newA: number[] = swapArrayElements(a, i, minIndex)
-//     D.animateCellSwap(grid, i, minIndex, click, component)
-//     // D.animateCellSwap did the
-//     // animation but it didn't reset the
-//     // actual values on which the grid
-//     // is based - the array. We do that
-//     // now BUT we don't re-render the grid -
-//     // that happens in transitionEndEvents()
-//     // after the swap animation
-//     component.setState({
-//       a: newA,
-//       i: component.state.i + 1
-//     })
-//   } else {
-//     D.styleCellAsNothing(grid, i, click, component)
-//     component.setState({
-//       i: component.state.i + 1
-//     })
-//     selectionSort(component)
-//   }
-//   // -----------------------------------
-//   // [4] Repeat the process starting from the
-//   //     next cell
-//   // -----------------------------------
-//   // NOTE: selectionSort() is called when transitionEndEvents,
-//   // defined inside Rx.Observable.create() in the constructor,
-//   // hears the transitionEnd event as a cell finishes moving
-//   // OLD: selectionSort(component)
-// }
-
-// export function swapArrayElements(
-//   a: number[],
-//   i: number,
-//   minIndex: number
-// ): number[] {
-//   const tmpValue: number = a[i]
-//   const newA: number[] = a.slice()
-//   newA[i] = newA[minIndex]
-//   newA[minIndex] = tmpValue
-//   return newA
-// }

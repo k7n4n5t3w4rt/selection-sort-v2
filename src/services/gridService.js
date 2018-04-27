@@ -49,12 +49,13 @@ function styleCellAsNothing(
   grid: Cell[][],
   cellIndex: number,
   click: number,
-  component: any
+  dispatch: any
 ): void {
   const coordinates = cellCoordinatesFromArrayIndex(cellIndex, grid)
   const cell = grid[coordinates.colIndex][coordinates.rowIndex]
   cell.className = ''
-  component.setState({ grid })
+  // ACTION AND REDUCER
+  // component.setState({ grid })
 }
 
 function styleCellAsNext(
@@ -66,31 +67,34 @@ function styleCellAsNext(
   const coordinates = cellCoordinatesFromArrayIndex(cellIndex, grid)
   const cell = grid[coordinates.colIndex][coordinates.rowIndex]
   cell.className = 'next-cell'
-  component.setState({ grid })
+  // ACTION AND REDUCER
+  // component.setState({ grid })
 }
 
 function styleCellAsChecking(
   grid: Cell[][],
   cellIndex: number,
   click: number,
-  component: any
+  dispatch: any
 ): void {
   const coordinates = cellCoordinatesFromArrayIndex(cellIndex, grid)
   const cell = grid[coordinates.colIndex][coordinates.rowIndex]
   cell.className = 'checking-cell'
-  component.setState({ grid })
+  // ACTION AND REDUCER
+  // component.setState({ grid })
 }
 
 function styleCellAsMin(
   grid: Cell[][],
   cellIndex: number,
   click: number,
-  component: any
+  dispatch: any
 ): void {
   const coordinates = cellCoordinatesFromArrayIndex(cellIndex, grid)
   const cell = grid[coordinates.colIndex][coordinates.rowIndex]
   cell.className = 'min-cell'
-  component.setState({ grid })
+  // ACTION AND REDUCER
+  // component.setState({ grid })
 }
 
 function animateCellSwap(
@@ -98,7 +102,7 @@ function animateCellSwap(
   i: number,
   minIndex: number,
   click: number,
-  component: any
+  dispatch: any
 ): void {
   const iCoordinates = cellCoordinatesFromArrayIndex(i, grid)
   const minCoordinates = cellCoordinatesFromArrayIndex(minIndex, grid)
@@ -124,7 +128,8 @@ function animateCellSwap(
   // so next time the grid is rebuilt, it
   // will take the values from the actual
   // data array
-  component.setState({ grid })
+  // ACTION AND REDUCER
+  // component.setState({ grid })
 }
 
 // -------------------------------------
