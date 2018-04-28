@@ -34,7 +34,7 @@ type Props = {
 // }
 // SHOW_WORKING: boolean,
 // FPS: number,
-// ACCELLERATION: number,
+// ACCELERATION: number,
 // MAX_SECONDS_TRANSITION_INTERVAL: number,
 // LOOP: boolean,
 // RELOAD_INTERVAL: number,
@@ -42,6 +42,11 @@ type Props = {
 // FINISH_COUNTER: FinishCounter
 function Grid({ grid, cellTransitionEnd, click }: Props) {
   let idCount = 0
+  // On initial load, we don't know the size of
+  // the container element so the grid will be null
+  if (grid === null) {
+    return <div />
+  }
   return (
     <ul>
       {grid.map((row, i) => {

@@ -117,8 +117,7 @@ it('returns the full grid data structure', () => {
         className: '',
         cssTransition: ''
       }
-    ],
-    []
+    ]
   ])
 })
 // arrayToSort
@@ -219,8 +218,7 @@ it("return$ the 'x' and 'y' for an element in a two dimensional array", () => {
         className: '',
         cssTransition: ''
       }
-    ],
-    []
+    ]
   ]
   expect(cellCoordinatesFromArrayIndex(4, grid)).toEqual({
     colIndex: 1,
@@ -233,7 +231,7 @@ it("return$ the 'x' and 'y' for an element in a two dimensional array", () => {
 })
 
 // matrix
-it("returns a two dimensional array (aka 'grid matrixi`) from a single dimensional array + rows and columns", () => {
+it("returns a two dimensional array (aka 'grid matrix`) from a single dimensional array + rows and columns", () => {
   const a = [
     0.05709839095489899,
     0.06876443182090153,
@@ -254,8 +252,7 @@ it("returns a two dimensional array (aka 'grid matrixi`) from a single dimension
     [0.6233133203441312],
     [0.23138065938341246],
     [0.8500213932402951],
-    [0.4603262441754872],
-    []
+    [0.4603262441754872]
   ]
 
   expect(matrix(a)).toEqual(protoGrid)

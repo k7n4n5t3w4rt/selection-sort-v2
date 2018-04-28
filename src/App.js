@@ -2,7 +2,7 @@
 // Import React "as a namespace":
 //   ~ https://flow.org/en/docs/react/types/
 import * as React from 'react'
-import { createStore } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
 import qs from 'qs'
 // App
@@ -10,6 +10,8 @@ import './reset.css'
 import './index.css'
 import SelectionSort from './SelectionSort.js'
 import reducer from './redux/reducer.js'
+import logger from './redux/middleware/logger.js'
+
 // Flow
 import type { GlobalState } from './redux/reducer.js'
 // If there's a click=SOMETHING in the url use that,
@@ -38,7 +40,7 @@ const initialState: GlobalState = {
   }
 }
 
-const store = createStore(reducer, initialState)
+const store = createStore(reducer, initialState, applyMiddleware(logger))
 
 function App() {
   return (

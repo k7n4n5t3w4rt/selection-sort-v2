@@ -124,7 +124,7 @@ function animateCellSwap(
   // Changing the state here just sets
   // the values on grid cells in such a
   // way as to start the CSS transition.
-  // The actual data aray is not changed
+  // The actual data array is not changed
   // so next time the grid is rebuilt, it
   // will take the values from the actual
   // data array
@@ -158,17 +158,17 @@ export function cellCoordinatesFromArrayIndex(
 ): { colIndex: number, rowIndex: number } {
   const rows = grid.length
   const cols = grid[0].length
-  const rowIndex = index % (rows - 1)
+  const rowIndex = Math.floor(index / rows)
   const colIndex = Math.floor(index / cols)
   return { colIndex, rowIndex }
 }
 
 export function matrix(a: number[], cols: number): number[][] {
   return a.reduce(
-    (grid, currentValue, currentIndex) => {
+    (grid, currentValue, currentIndex, theArray) => {
       const lastIndex = grid.length - 1
       grid[lastIndex].push(currentValue)
-      if (!((currentIndex + 1) % cols)) {
+      if (!((currentIndex + 1) % cols) && currentIndex + 1 != theArray.length) {
         grid.push([])
       }
       return grid

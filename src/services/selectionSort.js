@@ -1,11 +1,9 @@
-import D from './services/gridService.js'
+import D from './gridService.js'
 
 // ====================================
 // The Selection Sort algorithm
 // ====================================
-async function selectionSort(store) {
-  const { i, a, click, size, cols, rows } = store.getState()
-  let { grid } = store.getState()
+export default (async function selectionSort(uiClick, uiGrid, a, i, dispatch) {
   // -----------------------------------
   // [0] Housekeeping
   // -----------------------------------
@@ -13,17 +11,15 @@ async function selectionSort(store) {
   if (i === a.length) {
     return true
   }
-  // Reset the grid based on the data array
-  grid = D.gridFactory(a, size.width, size.height, cols, rows, click)()
   // MAKE THIS AN ACTION AND REDUCER
-  // store.dispatch.setState({
+  // dispatch.setState({
   //   grid: grid
   // })
   // -----------------------------------
   // [1] Next
   // -----------------------------------
-  D.styleCellAsNext(grid, i, click, store.dispatch)
-  await D.wait(click)
+  D.styleCellAsNext(uiGrid, i, uiClick, dispatch)
+  await D.wait(uiClick)
   let minValue: number = a[i]
   // -----------------------------------
   // [2] Look ahead for the lightest cell in the
@@ -42,28 +38,28 @@ async function selectionSort(store) {
       const minIndex: number = await minIndexPromise
       // // ...remove styling on the previously checked cell
       // if (currentIndex !== i && currentIndex - 1 !== minIndex) {
-      //   D.styleCellAsNothing(grid, currentIndex - 1, click, store.dispatch)
+      //   D.styleCellAsNothing(grid, currentIndex - 1, uiClick, dispatch)
       // }
       // ...style this one as being checked
       if (currentIndex !== i) {
-        D.styleCellAsChecking(grid, currentIndex, click, store.dispatch)
-        await D.wait(click)
+        D.styleCellAsChecking(uiGrid, currentIndex, uiClick, dispatch)
+        await D.wait(uiClick)
       }
       // ...check this value against the current minValue
       if (currentIndex > minIndex && currentValue < minValue) {
         // ...remove styling on the previous min cell
         if (minIndex !== i) {
-          D.styleCellAsNothing(grid, minIndex, click, store.dispatch)
+          D.styleCellAsNothing(uiGrid, minIndex, uiClick, dispatch)
         }
         // ...style this one as min
         if (currentIndex !== i) {
-          D.styleCellAsMin(grid, currentIndex, click, store.dispatch)
+          D.styleCellAsMin(uiGrid, currentIndex, uiClick, dispatch)
         }
         minValue = currentValue
         return currentIndex
       } else {
         if (currentIndex !== i) {
-          D.styleCellAsNothing(grid, currentIndex, click, store.dispatch)
+          D.styleCellAsNothing(uiGrid, currentIndex, uiClick, dispatch)
         }
         return minIndex
       }
@@ -75,7 +71,7 @@ async function selectionSort(store) {
   // -----------------------------------
   if (i !== minIndex) {
     const newA: number[] = swapArrayElements(a, i, minIndex)
-    D.animateCellSwap(grid, i, minIndex, click, store.dispatch)
+    D.animateCellSwap(uiGrid, i, minIndex, uiClick, dispatch)
     // D.animateCellSwap did the
     // animation but it didn't reset the
     // actual values on which the grid
@@ -84,17 +80,17 @@ async function selectionSort(store) {
     // that happens in transitionEndEvents()
     // after the swap animation
     // DISPATCH AN ACTION
-    // store.dispatch.setState({
+    // dispatch.setState({
     //   a: newA,
-    //   i: store.dispatch.state.i + 1
+    //   i: dispatch.state.i + 1
     // })
   } else {
-    D.styleCellAsNothing(grid, i, click, store.dispatch)
+    D.styleCellAsNothing(uiGrid, i, uiClick, dispatch)
     // DISPATCH AN ACTION
-    // store.dispatch.setState({
-    //   i: store.dispatch.state.i + 1
+    // dispatch.setState({
+    //   i: dispatch.state.i + 1
     // })
-    selectionSort(store)
+    // I DON'T THINK I SHOULD BE CALLING selectionSort MANUALLY EVER... selectionSort(uiClick, uiGrid, a, i, dispatch)
   }
   // -----------------------------------
   // [4] Repeat the process starting from the
@@ -103,8 +99,8 @@ async function selectionSort(store) {
   // NOTE: selectionSort() is called when transitionEndEvents,
   // defined inside Rx.Observable.create() in the constructor,
   // hears the transitionEnd event as a cell finishes moving
-  // OLD: selectionSort(store.dispatch)
-}
+  // OLD: selectionSort(dispatch)
+})
 
 export function swapArrayElements(
   a: number[],
@@ -117,5 +113,3 @@ export function swapArrayElements(
   newA[minIndex] = tmpValue
   return newA
 }
-
-module.exports = selectionSort

@@ -1,6 +1,7 @@
 {
   "plugins": [
-    "cypress"
+    "cypress",
+    "flowtype"
   ],
   "env": {
     "cypress/globals": true
